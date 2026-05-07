@@ -169,7 +169,7 @@ kubectl apply -f tolerant-pod.yaml
 kubectl describe pod tolerant-pod | grep -A 8 Tolerations
 ```
 
-> **Key Concept:** `NoExecute` evicts already-running pods that do not tolerate the taint. The `tolerationSeconds` field defines how long a pod with the toleration can remain on the node before being evicted. Omitting it means the pod stays indefinitely.
+> **Key Concept:** `NoExecute` evicts already-running pods that do not tolerate the taint. The `tolerationSeconds` field defines how long a pod with the toleration can remain on the node before being evicted.
 
 </details>
 
@@ -205,7 +205,7 @@ kubectl apply -f wildcard-pod.yaml
 kubectl describe pod wildcard-pod | grep -A 5 Tolerations
 ```
 
-> **Key Concept:** When `operator` is set to `Exists`, the `value` field must be omitted. The pod will tolerate all taints with the matching key regardless of value or effect. To tolerate **all taints on all nodes**, omit the `key` field entirely along with using `operator: Exists`.
+> **Key Concept:** When `operator` is set to `Exists`, the `value` field must be omitted. The pod will tolerate all taints with the matching key regardless of value or effect. To tolerate **all taints** on any node, omit both `key` and `value` and set `operator: Exists`.
 
 </details>
 
@@ -260,7 +260,7 @@ kubectl apply -f stuck-pod.yaml
 kubectl get pod stuck-pod -o wide
 ```
 
-> **Key Concept:** Use `kubectl describe pod` Events and `kubectl describe node` Taints together to diagnose scheduling failures caused by taints. The control-plane node also has a taint (`node-role.kubernetes.io/control-plane:NoSchedule`) which explains why workloads don't land on it by default.
+> **Key Concept:** Use `kubectl describe pod` Events and `kubectl describe node` Taints together to diagnose scheduling failures caused by taints. The control-plane node also has a taint (`node-role.kubernetes.io/control-plane:NoSchedule`) which prevents regular pods from landing on it.
 
 </details>
 
@@ -281,6 +281,8 @@ Create a Deployment named `gpu-workload` in the `default` namespace using the `n
 
 1. **Tolerate** the `hardware=gpu:NoSchedule` taint
 2. **Only** schedule on `node-gpu` using a `requiredDuringSchedulingIgnoredDuringExecution` node affinity rule
+
+> 💡 **See also:** [Node Affinity](./node-affinity.md) for deeper coverage of affinity rules and operators.
 
 <details>
 <summary>✅ Answer</summary>
@@ -334,7 +336,7 @@ kubectl apply -f gpu-workload.yaml
 kubectl get pods -l app=gpu-workload -o wide
 ```
 
-> **Key Concept:** Taints/tolerations and node affinity are complementary. Tolerations allow a pod to **land on** a tainted node but don't force it there. Node affinity **attracts** pods to specific nodes. Use both together to ensure pods land exactly where intended.
+> **Key Concept:** Taints/tolerations and node affinity are complementary. Tolerations allow a pod to **land on** a tainted node but don't force it there. Node affinity **attracts** pods to specific nodes. Used together they implement a reliable dedicated-node pattern.
 
 </details>
 
@@ -416,7 +418,7 @@ kubectl describe pod test-nginx | grep -A 5 Events
 kubectl delete pod test-nginx
 ```
 
-> **Key Concept:** To fully isolate a node, apply **both** `NoSchedule` (prevents new pods from landing) and `NoExecute` (evicts existing pods without tolerations). This is the standard "dedicated node" pattern used for sensitive workloads like monitoring, logging agents, or GPU tasks.
+> **Key Concept:** To fully isolate a node, apply **both** `NoSchedule` (prevents new pods from landing) and `NoExecute` (evicts existing pods without tolerations). This is the standard "dedicated node" pattern used for system-critical workloads.
 
 </details>
 
@@ -465,3 +467,7 @@ NoSchedule     →  Blocks new pods (existing pods unaffected)
 PreferNoSchedule → Soft block for new pods
 NoExecute      →  Blocks new pods + evicts existing pods
 ```
+
+### Related Topics
+
+- 🔗 [Node Affinity](./node-affinity.md) — use alongside taints/tolerations to both repel unwanted pods and attract the right ones; see **Question 7** for a combined example
