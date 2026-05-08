@@ -6,7 +6,7 @@ and difficulty distribution.
 """
 
 import random
-from question_parser import (
+from .question_parser import (
     scan_all_questions,
     DOMAIN_WEIGHTS,
     DIFFICULTY_EASY,
