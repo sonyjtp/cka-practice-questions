@@ -2,7 +2,7 @@
 
 > **CKA Exam Domain:** Scheduling  
 > **Topic:** Manual Scheduling (bypassing the Kubernetes scheduler)  
-> **Total Questions:** 7
+> **Total Questions:** 9
 
 ---
 
@@ -78,11 +78,50 @@ kubectl get pods -n kube-system | grep scheduler
 
 ---
 
+### Question 3 — Assigning a `schedulerName` to a Pod
+> ⏱️ **Recommended Time: 4 minutes**
+
+Create a pod named `custom-scheduled-pod` using the `nginx:alpine` image in the `default` namespace that explicitly requests to be scheduled by a scheduler named `my-scheduler`.
+
+<details>
+<summary>✅ Answer</summary>
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: custom-scheduled-pod
+  namespace: default
+spec:
+  schedulerName: my-scheduler
+  containers:
+  - name: nginx
+    image: nginx:alpine
+```
+
+```bash
+kubectl apply -f custom-scheduled-pod.yaml
+
+# Verify the schedulerName is set
+kubectl describe pod custom-scheduled-pod | grep -i scheduler
+```
+
+Expected output:
+```
+Scheduler: my-scheduler
+```
+
+> **Key Concept:** `spec.schedulerName` tells Kubernetes which scheduler should handle this pod. If the named scheduler is not running, the pod will remain in `Pending` state indefinitely. The default value is `default-scheduler` and does not need to be specified explicitly.
+
+</details>
+
+---
+
 ## 🟡 Medium Questions
 
 ---
 
-### Question 3 — Scheduling When Scheduler is Down
+### Question 4 — Scheduling When Scheduler is Down
 > ⏱️ **Recommended Time: 7 minutes**
 
 The Kubernetes scheduler is not running in the cluster. Create a pod named `web-app` using the `nginx:alpine` image that should run on node `controlplane`. Then verify the pod is running on the correct node.
@@ -119,7 +158,7 @@ kubectl get pod web-app -o jsonpath='{.spec.nodeName}'
 
 ---
 
-### Question 4 — Manually Scheduling an Existing Pending Pod
+### Question 5 — Manually Scheduling an Existing Pending Pod
 > ⏱️ **Recommended Time: 8 minutes**
 
 A pod definition file exists at `/root/mypod.yaml` but the pod is stuck in `Pending` state because the scheduler is down. Manually schedule this pod to run on `node02` **without modifying the original file**.
@@ -156,11 +195,61 @@ EOF
 
 ---
 
+### Question 6 — Diagnose a Pod Pending Due to Wrong `schedulerName`
+> ⏱️ **Recommended Time: 7 minutes**
+
+A pod named `pending-app` in the `default` namespace has been in `Pending` state for several minutes. The cluster only runs the `default-scheduler`. Identify the root cause and fix it.
+
+<details>
+<summary>✅ Answer</summary>
+
+```bash
+# 1. Check pod events
+kubectl describe pod pending-app | grep -A 10 Events
+
+# You will NOT see a FailedScheduling event — the pod is simply ignored
+# by default-scheduler because it is waiting for a different scheduler
+
+# 2. Check the schedulerName on the pod
+kubectl get pod pending-app -o yaml | grep schedulerName
+# Output might show:
+#   schedulerName: my-custom-scheduler
+
+# 3. Verify no such scheduler is running
+kubectl get pods -n kube-system | grep scheduler
+# Only default-scheduler is present
+
+# 4. Fix — update the pod to use default-scheduler
+# (Pods cannot be patched for schedulerName in-place — recreate it)
+kubectl get pod pending-app -o yaml > pending-app.yaml
+```
+
+Edit `pending-app.yaml` — change or remove the `schedulerName`:
+
+```yaml
+spec:
+  schedulerName: default-scheduler   # fix: was my-custom-scheduler
+```
+
+```bash
+kubectl delete pod pending-app
+kubectl apply -f pending-app.yaml
+
+# Verify it gets scheduled
+kubectl get pod pending-app -o wide
+```
+
+> **Key Concept:** A pod with a `schedulerName` that does not match any running scheduler will remain in `Pending` state **silently** — there will be no `FailedScheduling` event because no scheduler is even attempting to schedule it. Always check `spec.schedulerName` when a pod is Pending with no events.
+
+</details>
+
+---
+
 ## 🔴 Hard Questions
 
 ---
 
-### Question 5 — Batch Manual Scheduling
+### Question 7 — Batch Manual Scheduling
 > ⏱️ **Recommended Time: 10 minutes**
 
 The default scheduler is not running. You need to manually schedule three pods from the namespace `production`:
@@ -169,7 +258,7 @@ The default scheduler is not running. You need to manually schedule three pods f
 - `backend-pod` → should run on `node02`
 - `database-pod` → should run on `node02`
 
-All pods are currently in `Pending` state. After scheduling them, create a pod named `test-scheduler` in the `default` namespace with image `busybox:1.28` running `sleep 3600` — this pod should be scheduled normally (waiting for the scheduler to be fixed).
+All pods are currently in `Pending` state. After scheduling them, create a pod named `test-scheduler` in the `default` namespace with image `busybox:1.28` running `sleep 3600` — this pod should also be manually scheduled to `node01`.
 
 <details>
 <summary>✅ Answer</summary>
@@ -191,6 +280,7 @@ metadata:
   name: test-scheduler
   namespace: default
 spec:
+  nodeName: node01
   containers:
   - name: busybox
     image: busybox:1.28
@@ -204,10 +294,10 @@ EOF
 
 ---
 
-### Question 6 — Binding Object via API
+### Question 8 — Binding Object via API
 > ⏱️ **Recommended Time: 9 minutes**
 
-Create a Binding object to manually bind a pod named `critical-app` (already created in `default` namespace and in `Pending` state) to a node named `node01`. Use the Binding API object and send it to the API server using `kubectl proxy` and `curl`.
+Create a Binding object to manually bind a pod named `critical-app` (already created in `default` namespace and in `Pending` state) to a node named `node01`. Use the Binding API object and send it directly to the API server.
 
 <details>
 <summary>✅ Answer</summary>
@@ -260,7 +350,7 @@ kubectl get pod critical-app -o wide
 
 ---
 
-### Question 7 — Static Pods vs Manual Scheduling
+### Question 9 — Static Pods vs Manual Scheduling
 > ⏱️ **Recommended Time: 10 minutes**
 
 You have a static pod definition file at `/etc/kubernetes/manifests/static-web.yaml` on `node01`. The scheduler is disabled.
@@ -315,6 +405,7 @@ kubectl get pods -o wide | grep -E 'static-web|manual-web'
 | Field / Object | Purpose |
 |----------------|---------|
 | `spec.nodeName` | Directly assign a pod to a node, bypassing the scheduler |
+| `spec.schedulerName` | Name of the scheduler responsible for this pod (default: `default-scheduler`) |
 | `Binding` object | What the scheduler creates internally to bind pods to nodes |
 | `nodeSelector` | Hints to the scheduler to place a pod on nodes with matching labels |
 | Static Pod path | `/etc/kubernetes/manifests/` — managed by kubelet, not the scheduler |
@@ -331,9 +422,21 @@ kubectl get pods -o wide
 # Check why a pod is Pending
 kubectl describe pod <pod-name>
 
+# Check schedulerName on a pod
+kubectl get pod <pod-name> -o yaml | grep schedulerName
+
 # Manually assign a node
 kubectl patch pod <pod-name> -p '{"spec":{"nodeName":"<node-name>"}}'
 
 # Get pod's assigned node
 kubectl get pod <pod-name> -o jsonpath='{.spec.nodeName}'
+```
+
+### Pending Pod Diagnosis — Cheat Sheet
+
+```
+No FailedScheduling event + schedulerName set  →  Named scheduler is not running
+FailedScheduling: insufficient resources       →  Node capacity issue
+FailedScheduling: untolerated taint            →  Add toleration or remove taint
+FailedScheduling: no matching node             →  Check nodeSelector / node affinity
 ```
