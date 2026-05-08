@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sonyjtp.github.io/cka-practice-questions/sitemap.xml
