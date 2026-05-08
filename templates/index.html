@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CKA Practice Exam Simulator — Randomized Kubernetes certification practice exams with countdown timer and exam-like experience.">
+  <title>CKA Practice Exam Simulator</title>
+  <link rel="stylesheet" href="/static/css/exam.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☸️</text></svg>">
+</head>
+<body>
+
+  <!-- ===== START SCREEN ===== -->
+  <div id="start-screen" class="screen active">
+    <div class="start-logo">☸️</div>
+    <h1 class="start-title">CKA Practice Exam</h1>
+    <p class="start-subtitle">Certified Kubernetes Administrator — Exam Simulator</p>
+
+    <div class="exam-info-grid">
+      <div class="info-card">
+        <div class="icon">⏱️</div>
+        <div class="label">Duration</div>
+        <div class="value">2 Hours</div>
+      </div>
+      <div class="info-card">
+        <div class="icon">📝</div>
+        <div class="label">Available Questions</div>
+        <div class="value" id="available-count">—</div>
+      </div>
+      <div class="info-card">
+        <div class="icon">🎯</div>
+        <div class="label">Passing Score</div>
+        <div class="value">66%</div>
+      </div>
+      <div class="info-card">
+        <div class="icon">🖥️</div>
+        <div class="label">Format</div>
+        <div class="value">Hands-On</div>
+      </div>
+    </div>
+
+    <div class="question-count-control">
+      <label for="question-count-slider">Questions:</label>
+      <input type="range" id="question-count-slider" min="5" max="25" value="17" step="1">
+      <span class="count-display" id="count-display">17</span>
+    </div>
+
+    <button class="btn btn-primary" id="start-btn">
+      🚀 Start Exam
+    </button>
+  </div>
+
+  <!-- ===== EXAM SCREEN ===== -->
+  <div id="exam-screen" class="screen">
+    <div class="exam-topbar">
+      <div class="topbar-left">
+        <span class="topbar-title">☸️ CKA Practice Exam</span>
+      </div>
+      <div class="topbar-center">
+        <div class="timer green" id="timer">
+          <span class="timer-icon">⏱️</span>
+          <span class="timer-text">02:00:00</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="progress-text">0/0 answered</span>
+        <button class="btn btn-danger" style="padding:0.5rem 1rem;font-size:0.85rem" onclick="document.querySelector('#end-btn') ? document.querySelector('#end-btn').click() : confirmEndFromTopbar()">End Exam</button>
+      </div>
+    </div>
+
+    <div class="exam-body">
+      <div class="sidebar">
+        <div class="sidebar-title">Question Palette</div>
+        <div class="question-grid"></div>
+        <div class="sidebar-legend">
+          <div class="legend-item"><div class="legend-dot current"></div> Current</div>
+          <div class="legend-item"><div class="legend-dot answered"></div> Answered</div>
+          <div class="legend-item"><div class="legend-dot flagged"></div> Flagged</div>
+          <div class="legend-item"><div class="legend-dot unanswered"></div> Unanswered</div>
+        </div>
+      </div>
+
+      <div class="question-area">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading exam…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS SCREEN ===== -->
+  <div id="results-screen" class="screen">
+    <!-- Populated dynamically by JS -->
+  </div>
+
+  <!-- ===== MODAL ===== -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal"></div>
+  </div>
+
+  <script src="/static/js/exam.js"></script>
+</body>
+</html>
