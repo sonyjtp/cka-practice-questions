@@ -606,23 +606,7 @@ body::before {
   font-weight: 600;
 }
 
-/* Self Assessment */
-.self-assess {
-  display: none;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 1.25rem;
-  padding: 1rem 1.25rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  flex-wrap: wrap;
-}
-
-.self-assess.visible {
-  display: flex;
-  animation: slideDown 0.25s ease;
-}
+/* Self Assessment (results screen inline buttons) */
 
 .self-assess span {
   font-size: 0.85rem;
@@ -872,21 +856,135 @@ body::before {
   font-size: 0.9rem;
 }
 
-.rq-status { font-size: 1.1rem; }
-.rq-num { color: var(--text-muted); min-width: 1.5rem; }
+.rq-status { font-size: 1.1rem; flex-shrink: 0; }
+.rq-num { color: var(--text-muted); min-width: 1.5rem; flex-shrink: 0; }
 .rq-title { flex: 1; color: var(--text-secondary); }
-.rq-review-link {
-  font-size: 0.75rem;
-  color: var(--accent);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  white-space: nowrap;
+
+/* Expandable question cards (results screen) */
+.rq-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
 }
-.rq-item:hover .rq-review-link { opacity: 1; }
-.rq-item:hover { background: rgba(99,102,241,0.05); border-radius: var(--radius-sm); }
-.rq-item.rq-correct { }
-.rq-item.rq-incorrect .rq-title { color: rgba(239,68,68,0.8); }
-.rq-item.rq-unanswered { opacity: 0.6; }
+
+.rq-card.rq-correct { border-color: rgba(34,197,94,0.3); }
+.rq-card.rq-incorrect { border-color: rgba(239,68,68,0.2); }
+
+.rq-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  user-select: none;
+  background: var(--bg-card);
+  transition: background 0.15s ease;
+  flex-wrap: nowrap;
+}
+
+.rq-card-header:hover { background: var(--bg-card-hover); }
+
+.rq-assess-inline {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.rq-assess-inline .assess-btn {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  line-height: 1;
+}
+
+.rq-assess-inline .assess-btn:hover { border-color: var(--border-active); transform: scale(1.1); }
+.rq-assess-inline .assess-btn.correct.selected { border-color: var(--green); background: var(--green-glow); }
+.rq-assess-inline .assess-btn.incorrect.selected { border-color: var(--red); background: var(--red-glow); }
+
+.rq-expand-icon {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-left: 0.25rem;
+}
+
+.rq-card-body {
+  padding: 1.25rem 1.25rem 1.25rem 1.25rem;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+}
+
+.rq-question-text {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.rq-answer-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.rq-answer-content {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.rq-answer-content code {
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(99,102,241,0.1);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: var(--accent);
+}
+
+.rq-answer-content pre {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+.rq-answer-content pre code { background: none; padding: 0; color: var(--text-primary); font-size: 0.85rem; }
+
+.rq-answer-content blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 0.5rem 0.75rem;
+  margin: 0.75rem 0;
+  background: rgba(99,102,241,0.05);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.rq-answer-content table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; }
+.rq-answer-content th, .rq-answer-content td { padding: 0.4rem 0.6rem; border: 1px solid var(--border); font-size: 0.85rem; }
+.rq-answer-content th { background: var(--bg-primary); font-weight: 600; }
+
+/* Old flat rq-item styles (kept for compatibility) */
+.rq-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(99,102,241,0.08);
+  font-size: 0.9rem;
+}
 
 .results-actions {
   display: flex;
