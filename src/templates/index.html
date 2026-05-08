@@ -45,6 +45,28 @@
       <span class="count-display" id="count-display">17</span>
     </div>
 
+    <div class="assessment-mode-control">
+      <label for="assessment-mode-toggle">
+        <input type="checkbox" id="assessment-mode-toggle" checked>
+        <span>📖 Enable self-assessment after exam</span>
+      </label>
+      <p class="assessment-mode-desc">If enabled, you'll review all questions and mark your answers after the exam ends. If disabled, you'll only see your time and flagged questions.</p>
+    </div>
+
+    <div class="answer-reveal-control">
+      <label>🔍 When to reveal answers?</label>
+      <div class="radio-group">
+        <label class="radio-item">
+          <input type="radio" name="answer-reveal" value="end" checked>
+          <span>At the end of exam (recommended for realistic practice)</span>
+        </label>
+        <label class="radio-item">
+          <input type="radio" name="answer-reveal" value="during">
+          <span>After each question (for learning mode)</span>
+        </label>
+      </div>
+    </div>
+
     <button class="btn btn-primary" id="start-btn">
       🚀 Start Exam
     </button>

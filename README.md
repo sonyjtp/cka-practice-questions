@@ -35,9 +35,40 @@ Open **http://localhost:5001** in your browser.
 | 🔀 **Randomized Questions** | Questions shuffled and weighted by CKA domain proportions      |
 | 📊 **Question Palette**     | Sidebar navigation with answered/flagged/current status        |
 | 🚩 **Flag for Review**      | Mark questions to revisit before ending the exam               |
-| 🔼 **Show/Hide Answers**    | Reveal answers and self-assess (✅ correct / ❌ incorrect)       |
-| 📈 **Results Dashboard**    | Score ring, domain breakdown, time taken, per-question details |
+| 🔼 **Show/Hide Answers**    | View answers during or after exam (configurable)               |
+| 📈 **Results Dashboard**    | Live score calculation, domain breakdown, time, and details    |
 | 🎚️ **Configurable Count**  | Slider to choose 5–25 questions per exam                       |
+| 💯 **Weighted Scoring**     | Points based on difficulty: Easy (5) → Medium (10) → Hard (15) |
+| 🎓 **Flexible Assessment**  | Toggle self-assessment on/off; reveal answers during or at end |
+
+## ⚙️ Pre-Exam Configuration
+
+Before each exam, you choose:
+
+### 1. Assessment Mode
+- **Enabled** (default): Full review & self-assessment after exam with live score calculation
+- **Disabled**: Simple results (time, flagged questions) — for external grading
+
+### 2. Answer Reveal Timing
+- **At the end** (default, recommended): Answers hidden during exam — realistic CKA practice
+- **During exam**: Answers can be toggled during the exam — learning mode
+
+## 📊 Scoring System
+
+**Weighted by Difficulty:**
+- 🟢 **Easy**: 5 points each
+- 🟡 **Medium**: 10 points each
+- 🔴 **Hard**: 15 points each
+
+**Score Calculation:**
+```
+Score % = (Points Earned / Total Possible Points) × 100
+Passing Score: 66% (same as real CKA)
+```
+
+**Example Exam:**
+- 5 easy (25 pts) + 7 medium (70 pts) + 3 hard (45 pts) = 140 total points
+- If you get 8 easy, 5 medium, 2 hard correct: (40+50+30) / 140 = 71% ✅ Pass
 
 ## 📂 Adding New Questions
 

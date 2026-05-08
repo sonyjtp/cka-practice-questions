@@ -17,9 +17,18 @@
   let examStartTime = null;
   let examEndTime = null;
   let examEnded = false;   // true once the exam has been submitted
+  let assessmentModeEnabled = true;  // user choice from start screen
+  let answerRevealTiming = "end";    // "end" or "during"
 
   // Per-question state: { answered: bool, correct: bool|null, flagged: bool }
   let questionStates = [];
+
+  // Point values by difficulty
+  const POINTS_BY_DIFFICULTY = {
+    easy: 5,
+    medium: 10,
+    hard: 15,
+  };
 
   // ===== DOM REFS =====
   const $ = (sel) => document.querySelector(sel);
@@ -69,6 +78,8 @@
   // ===== START EXAM =====
   async function startExam() {
     const count = countSlider ? parseInt(countSlider.value) : 17;
+    assessmentModeEnabled = document.getElementById("assessment-mode-toggle")?.checked ?? true;
+    answerRevealTiming = document.querySelector("input[name='answer-reveal']:checked")?.value ?? "end";
     examEnded = false;
     showScreen(examScreen);
 
@@ -203,7 +214,10 @@
     const answerHtml = markdownToHtml(q.answer);
 
     // In review mode (post-exam), show answer section; during exam, hide it
-    const answerSection = examEnded ? `
+    let answerSection = "";
+    if (examEnded) {
+      // Post-exam review: always show answers
+      answerSection = `
       <div class="answer-section">
         <button class="answer-toggle" id="answer-toggle-btn">
           ${state.answerRevealed ? "🔽 Hide Answer" : "🔼 Show Answer"}
@@ -211,10 +225,25 @@
         <div class="answer-content ${state.answerRevealed ? "visible" : ""}" id="answer-content">
           ${answerHtml}
         </div>
-      </div>` : `
-      <div class="attempt-notice">
-        💡 <strong>Attempt this task</strong> in your Kubernetes environment. Answers and self-assessment will be available after you end the exam.
       </div>`;
+    } else if (answerRevealTiming === "during") {
+      // Learning mode: show answer during exam
+      answerSection = `
+      <div class="answer-section">
+        <button class="answer-toggle" id="answer-toggle-btn">
+          ${state.answerRevealed ? "🔽 Hide Answer" : "🔼 Show Answer & Learn"}
+        </button>
+        <div class="answer-content ${state.answerRevealed ? "visible" : ""}" id="answer-content">
+          ${answerHtml}
+        </div>
+      </div>`;
+    } else {
+      // Exam mode: hide answers until exam ends
+      answerSection = `
+      <div class="attempt-notice">
+        💡 <strong>Attempt this task</strong> in your Kubernetes environment. Answers will be revealed after you end the exam.
+      </div>`;
+    }
 
     // In review mode show "Back to Results" instead of "End Exam"
     const rightNav = examEnded
@@ -327,7 +356,10 @@
     examEnded = true;
 
     if (timedOut) {
-      showModal("⏰", "Time's Up!", "Your exam time has expired. Review your answers and self-assess on the results page.", [
+      const msg = assessmentModeEnabled
+        ? "Your exam time has expired. Review your answers and self-assess on the results page."
+        : "Your exam time has expired. View your exam summary.";
+      showModal("⏰", "Time's Up!", msg, [
         { text: "View Results", class: "btn btn-primary", action: () => { hideModal(); showResults(); } },
       ]);
     } else {
@@ -339,11 +371,82 @@
   function showResults() {
     showScreen(resultsScreen);
 
+    if (assessmentModeEnabled) {
+      showAssessmentResults();
+    } else {
+      showSimpleResults();
+    }
+  }
+
+  function showSimpleResults() {
+    // Simple results: just stats, time, and flagged questions
+    const total = exam.total_questions;
+    const flagged = questionStates.filter((s) => s.flagged).length;
+    const elapsed = Math.floor(((examEndTime || Date.now()) - examStartTime) / 1000);
+    const elapsedMins = Math.floor(elapsed / 60);
+    const elapsedSecs = elapsed % 60;
+
+    let flaggedQuestionsHtml = "";
+    if (flagged > 0) {
+      flaggedQuestionsHtml = `
+        <div class="results-flagged">
+          <h3>🚩 Flagged Questions for Review</h3>
+          <div class="flagged-list">`;
+      exam.questions.forEach((q, i) => {
+        if (questionStates[i].flagged) {
+          flaggedQuestionsHtml += `
+            <div class="flagged-item">
+              <span>${i + 1}.</span>
+              <span>${escapeHtml(q.title)}</span>
+              <span class="difficulty-badge ${q.difficulty}" style="font-size:0.65rem">${q.difficulty}</span>
+            </div>`;
+        }
+      });
+      flaggedQuestionsHtml += `
+          </div>
+        </div>`;
+    }
+
+    resultsScreen.innerHTML = `
+      <div class="results-header">
+        <div class="results-icon">📝</div>
+        <h1 class="results-title">Exam Submitted</h1>
+        <p class="results-subtitle">Review your exam summary below. Compare against official solutions or use the full assessment mode next time.</p>
+      </div>
+
+      <div class="results-stats">
+        <div class="stat-card">
+          <div class="stat-value">${total}</div>
+          <div class="stat-label">Questions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${elapsedMins}m ${elapsedSecs}s</div>
+          <div class="stat-label">Time Taken</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${flagged}</div>
+          <div class="stat-label">Flagged</div>
+        </div>
+      </div>
+
+      ${flaggedQuestionsHtml}
+
+      <div class="results-actions">
+        <button class="btn btn-primary" onclick="location.reload()">🔄 New Exam</button>
+      </div>
+    `;
+  }
+
+  function showAssessmentResults() {
+    // Full assessment results: expandable questions with self-assess
     const total = exam.total_questions;
     const elapsed = Math.floor(((examEndTime || Date.now()) - examStartTime) / 1000);
     const elapsedMins = Math.floor(elapsed / 60);
     const elapsedSecs = elapsed % 60;
     const circumference = 2 * Math.PI * 75;
+
+    // Calculate total possible points
+    const totalPoints = exam.questions.reduce((sum, q) => sum + POINTS_BY_DIFFICULTY[q.difficulty], 0);
 
     // Build expandable question cards for self-assessment
     let questionsHtml = "";
@@ -352,6 +455,8 @@
       const answerHtml = markdownToHtml(q.answer);
       const statusIcon = s.correct === true ? "✅" : s.correct === false ? "❌" : "⬜";
       const cardClass = s.correct === true ? "rq-correct" : s.correct === false ? "rq-incorrect" : "";
+      const points = POINTS_BY_DIFFICULTY[q.difficulty];
+      const pointsEarned = s.correct === true ? points : 0;
 
       questionsHtml += `
         <div class="rq-card ${cardClass}" id="rq-card-${i}">
@@ -360,6 +465,7 @@
             <span class="rq-num">${i + 1}.</span>
             <span class="rq-title">${escapeHtml(q.title)}</span>
             <span class="difficulty-badge ${q.difficulty}" style="font-size:0.65rem">${q.difficulty}</span>
+            <span class="rq-points" id="rq-points-${i}" title="Points for this question">${pointsEarned}/${points}</span>
             <div class="rq-assess-inline">
               <button class="assess-btn ${s.correct === true ? "correct selected" : ""}" data-idx="${i}" data-result="correct" title="Got it right">✅</button>
               <button class="assess-btn ${s.correct === false ? "incorrect selected" : ""}" data-idx="${i}" data-result="incorrect" title="Got it wrong">❌</button>
@@ -397,11 +503,11 @@
       <div class="results-stats">
         <div class="stat-card">
           <div class="stat-value" id="stat-correct" style="color:var(--green)">0</div>
-          <div class="stat-label">Correct</div>
+          <div class="stat-label">Points Earned</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" id="stat-incorrect" style="color:var(--red)">0</div>
-          <div class="stat-label">Incorrect</div>
+          <div class="stat-value" id="stat-total" style="color:var(--text-secondary)">${totalPoints}</div>
+          <div class="stat-label">Total Points</div>
         </div>
         <div class="stat-card">
           <div class="stat-value" id="stat-pending" style="color:var(--text-muted)">${total}</div>
@@ -448,6 +554,7 @@
         const idx = parseInt(btn.dataset.idx);
         const result = btn.dataset.result;
         const isCorrect = result === "correct";
+        const points = POINTS_BY_DIFFICULTY[exam.questions[idx].difficulty];
 
         questionStates[idx].correct = isCorrect;
         questionStates[idx].answered = true;
@@ -461,34 +568,43 @@
           }
         });
 
-        // Update status icon
+        // Update status icon and points
         document.getElementById(`rq-status-${idx}`).textContent = isCorrect ? "✅" : "❌";
+        document.getElementById(`rq-points-${idx}`).textContent = isCorrect ? `${points}/${points}` : `0/${points}`;
 
         // Update card class
         card.classList.remove("rq-correct", "rq-incorrect");
         card.classList.add(isCorrect ? "rq-correct" : "rq-incorrect");
 
-        updateResultsScore();
+        updateResultsScore(totalPoints);
       });
     });
 
     // Initial score update (in case some were already assessed)
-    updateResultsScore();
+    updateResultsScore(totalPoints);
   }
 
-  function updateResultsScore() {
+  function updateResultsScore(totalPoints) {
     const total = exam.total_questions;
-    const correct = questionStates.filter((s) => s.correct === true).length;
-    const incorrect = questionStates.filter((s) => s.correct === false).length;
-    const pending = total - correct - incorrect;
-    const assessed = correct + incorrect;
-    const score = assessed > 0 ? Math.round((correct / total) * 100) : null;
+    let correctPoints = 0;
+    let assessedCount = 0;
+
+    questionStates.forEach((s, i) => {
+      if (s.answered) {
+        assessedCount++;
+        if (s.correct) {
+          correctPoints += POINTS_BY_DIFFICULTY[exam.questions[i].difficulty];
+        }
+      }
+    });
+
+    const pending = total - assessedCount;
+    const score = totalPoints > 0 ? Math.round((correctPoints / totalPoints) * 100) : null;
     const passed = score !== null && score >= exam.passing_score_percent;
     const circumference = 2 * Math.PI * 75;
 
     // Stats
     const statCorrect = document.getElementById("stat-correct");
-    const statIncorrect = document.getElementById("stat-incorrect");
     const statPending = document.getElementById("stat-pending");
     const scorePercent = document.getElementById("score-percent");
     const ringFg = document.getElementById("score-ring-fg");
@@ -496,8 +612,7 @@
     const resultsTitle = document.getElementById("results-title");
     const resultsSubtitle = document.getElementById("results-subtitle");
 
-    if (statCorrect) statCorrect.textContent = correct;
-    if (statIncorrect) statIncorrect.textContent = incorrect;
+    if (statCorrect) statCorrect.textContent = `${correctPoints}/${totalPoints}`;
     if (statPending) statPending.textContent = pending;
 
     if (score !== null) {
@@ -516,8 +631,8 @@
         if (resultsIcon) resultsIcon.textContent = passed ? "🎉" : "📝";
         if (resultsTitle) resultsTitle.textContent = passed ? "Congratulations!" : "Keep Practicing!";
         if (resultsSubtitle) resultsSubtitle.textContent = passed
-          ? "You passed the practice exam!"
-          : `You need ${exam.passing_score_percent}% to pass. Keep going!`;
+          ? `You passed the practice exam! Final Score: ${score}%`
+          : `You need ${exam.passing_score_percent}% to pass (${correctPoints}/${totalPoints} points). Keep going!`;
       }
     } else {
       if (scorePercent) scorePercent.textContent = "—";
@@ -528,9 +643,9 @@
     exam.questions.forEach((q, i) => {
       const d = q.domain;
       if (!domainResults[d]) domainResults[d] = { correct: 0, total: 0, assessed: 0 };
-      domainResults[d].total++;
-      if (questionStates[i].correct === true) { domainResults[d].correct++; domainResults[d].assessed++; }
-      if (questionStates[i].correct === false) domainResults[d].assessed++;
+      domainResults[d].total += POINTS_BY_DIFFICULTY[q.difficulty];
+      if (questionStates[i].correct === true) { domainResults[d].correct += POINTS_BY_DIFFICULTY[q.difficulty]; domainResults[d].assessed += POINTS_BY_DIFFICULTY[q.difficulty]; }
+      if (questionStates[i].correct === false) domainResults[d].assessed += POINTS_BY_DIFFICULTY[q.difficulty];
     });
 
     const breakdown = document.getElementById("results-domain-breakdown");
