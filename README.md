@@ -1,25 +1,28 @@
 # ☸️ CKA Practice Questions & Exam Simulator
 
-> **Free, open-source Certified Kubernetes Administrator (CKA) practice exam simulator** — randomized questions, a 2-hour countdown timer, weighted difficulty scoring, and domain-level breakdowns that mirror the real CKA exam experience.
+> **Free, open-source Certified Kubernetes Administrator (CKA) practice exam simulator** — 337+ randomized questions, a 2-hour countdown timer with pause/resume, weighted difficulty scoring, self-assessment modes, and comprehensive troubleshooting scenarios matching the real CKA exam.
 
 [![License: Study Use](https://img.shields.io/badge/license-study--use-blue)](#-license)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue?logo=python)](https://www.python.org/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-CKA-326CE5?logo=kubernetes&logoColor=white)](https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/)
+[![Questions](https://img.shields.io/badge/questions-337%2B-green)](#-question-bank)
 [![CNCF](https://img.shields.io/badge/CNCF-Certified-blueviolet)](https://www.cncf.io/)
 
 ---
 
 ## 🎯 What Is This?
 
-This project is a **CKA mock exam simulator** designed for engineers preparing for the [Certified Kubernetes Administrator (CKA)](https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/) exam by the CNCF / Linux Foundation.
+This project is a **comprehensive CKA mock exam simulator** designed for engineers preparing for the [Certified Kubernetes Administrator (CKA)](https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/) exam by the CNCF / Linux Foundation.
 
 It provides:
-- **Hands-on style CKA practice questions** organized by exam domain
-- A realistic **exam simulator UI** with a 2-hour timer and question palette
-- **Weighted scoring** matching the CKA's difficulty distribution (Easy / Medium / Hard)
-- **Domain-level performance breakdown** so you know where to focus your study
+- **337+ hands-on CKA practice questions** organized by exam domain with progressive difficulty
+- A realistic **web-based exam simulator** with 2-hour countdown timer, pause/resume, and question palette
+- **Weighted scoring system** (Easy: 5 pts, Medium: 10 pts, Hard: 15 pts) matching real CKA distribution
+- **Flexible assessment modes** — evaluate after exam or during exam for learning
+- **Comprehensive troubleshooting scenarios** — 37+ debugging questions covering real cluster issues
+- **Domain-level performance breakdown** showing exactly where to focus your study
 
-Whether you are looking for *CKA practice questions*, a *CKA model exam*, *CKA mock tests*, or simply want to practice `kubectl` scenarios — this tool has you covered.
+Whether you are looking for *CKA practice questions*, a *CKA model exam*, *CKA mock tests*, or hands-on *Kubernetes troubleshooting practice* — this tool has you covered.
 
 ---
 
@@ -50,19 +53,21 @@ Open **http://localhost:5001** in your browser.
 
 ## 🎯 Exam Simulator Features
 
-| Feature                     | Description                                                    |
-|-----------------------------|----------------------------------------------------------------|
-| ⏱️ **Countdown Timer**      | 2-hour timer with color-coded warnings (green → yellow → red)  |
-| ⏸️ **Pause/Resume Timer**   | Click to pause exam timer when needed (breaks, urgent tasks)   |
-| ⚠️ **10-Minute Warning**    | Modal popup when 10 minutes remain                             |
-| 🔀 **Randomized Questions** | Questions shuffled and weighted by CKA domain proportions      |
-| 📊 **Question Palette**     | Sidebar navigation with answered/flagged/current status        |
-| 🚩 **Flag for Review**      | Mark questions to revisit before ending the exam               |
-| 🔼 **Show/Hide Answers**    | View answers during or after exam (configurable)               |
-| 📈 **Results Dashboard**    | Live score calculation, domain breakdown, time, and details    |
-| 🎚️ **Configurable Count**  | Slider to choose 5–25 questions per exam                       |
-| 💯 **Weighted Scoring**     | Points based on difficulty: Easy (5) → Medium (10) → Hard (15) |
-| 🎓 **Flexible Assessment**  | Toggle self-assessment on/off; reveal answers during or at end |
+| Feature                          | Description                                                            |
+|----------------------------------|------------------------------------------------------------------------|
+| ⏱️ **Countdown Timer**           | 2-hour timer with color-coded warnings (green → yellow → red)          |
+| ⏸️ **Pause/Resume Timer**        | Click to pause exam timer when needed (breaks, urgent tasks)           |
+| ⚠️ **10-Minute Warning**         | Modal popup when 10 minutes remain                                      |
+| 🔀 **Randomized Questions**      | Questions shuffled and weighted by CKA domain proportions              |
+| 📊 **Question Palette**          | Sidebar navigation with answered/flagged/current status                |
+| 🚩 **Flag for Review**           | Mark questions to revisit before ending the exam                       |
+| 🔼 **Show/Hide Answers**         | View answers during or after exam (configurable)                       |
+| 📝 **During-Exam Assessment**    | Mark answers as correct/wrong during exam for immediate feedback       |
+| 📈 **Results Dashboard**         | Live score calculation, domain breakdown, time, and details            |
+| 🎚️ **Configurable Count**       | Slider to choose 5–25 questions per exam                               |
+| 💯 **Weighted Scoring**          | Points based on difficulty: Easy (5) → Medium (10) → Hard (15)         |
+| 🎓 **Flexible Assessment**       | Toggle self-assessment on/off; reveal answers during or at end         |
+| 🔧 **Comprehensive Troubleshooting** | 37+ debugging questions covering cluster issues, certificates, RBAC  |
 
 ---
 
@@ -214,13 +219,24 @@ Answer content with code blocks, explanations, etc.
 
 ---
 
-## 🔍 Topics Covered (CKA Exam Domains)
+## 🔍 Question Coverage (CKA Exam Domains)
 
-- **Cluster Architecture** — kubeadm, etcd backup & restore, RBAC, admission controllers, certificates
-- **Workloads & Scheduling** — Deployments, DaemonSets, static Pods, resource limits, taints & tolerations, node affinity
-- **Services & Networking** — Services, Ingress, NetworkPolicy, CoreDNS, CNI plugins
-- **Storage** — PersistentVolumes, PersistentVolumeClaims, StorageClasses, volume mounts
-- **Troubleshooting** — Node/Pod failures, container logs, kubelet debugging, cluster component issues
+**Total: 337+ Practice Questions**
+
+### By Domain:
+
+- **Cluster Architecture** (57 questions) — kubeadm, etcd backup & restore, RBAC, admission controllers, certificates, kustomize, helm
+- **Workloads & Scheduling** (116 questions) — Deployments, DaemonSets, StatefulSets, init containers, resource limits, taints/tolerations, node affinity
+- **Services & Networking** (59 questions) — Services, Ingress, NetworkPolicy, CoreDNS, CNI plugins, kube-proxy, service networking
+- **Storage** (21 questions) — PersistentVolumes, PersistentVolumeClaims, StorageClasses, CSI, volume mounts
+- **Logging & Monitoring** (20 questions) — Cluster logging, application logging, metrics, observability
+- **Security** (27 questions) — TLS certificates, kubeconfig, security contexts, image security, RBAC deep dives
+- **Troubleshooting** (37 questions)
+  - Cluster debugging (6 questions) — Pending pods, CrashLoopBackOff, node status, services, volumes, multi-issue scenarios
+  - Application & Network debugging (6 questions) — OOMKilled, init containers, deployments, Ingress, API server, etcd recovery
+  - Certificate & TLS debugging (8 questions) — Certificate expiration, CA issues, kubelet rotation, TLS bootstrap, front-proxy
+  - Control Plane & Worker debugging (9 questions) — Kubelet, API server, scheduler, controller-manager, cluster recovery
+  - Storage & RBAC debugging (8 questions) — PVC binding, provisioning, pod permissions, webhooks, authorization conflicts
 
 > These topics align with the official [CKA Exam Curriculum](https://github.com/cncf/curriculum) published by the CNCF.
 
