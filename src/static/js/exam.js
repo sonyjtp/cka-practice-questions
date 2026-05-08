@@ -19,6 +19,7 @@
   let examEnded = false;   // true once the exam has been submitted
   let assessmentModeEnabled = true;  // user choice from start screen
   let answerRevealTiming = "end";    // "end" or "during"
+  let timerPaused = false;            // true if timer is paused
 
   // Per-question state: { answered: bool, correct: bool|null, flagged: bool }
   let questionStates = [];
@@ -117,6 +118,9 @@
       const topbarEndBtn = $("#topbar-end-btn");
       if (topbarEndBtn) topbarEndBtn.addEventListener("click", confirmEndExam);
 
+      const timerPauseBtn = $("#timer-pause-btn");
+      if (timerPauseBtn) timerPauseBtn.addEventListener("click", toggleTimerPause);
+
       updateProgress();
     } catch (e) {
       $(".question-area").innerHTML = `
@@ -131,7 +135,11 @@
   function startTimer() {
     updateTimerDisplay();
     timerInterval = setInterval(() => {
-      remainingSeconds--;
+      // Only decrement if not paused
+      if (!timerPaused) {
+        remainingSeconds--;
+      }
+
       if (remainingSeconds <= 0) {
         remainingSeconds = 0;
         clearInterval(timerInterval);
@@ -139,7 +147,7 @@
         return;
       }
 
-      if (remainingSeconds === 600 && !tenMinWarningShown) {
+      if (remainingSeconds === 600 && !tenMinWarningShown && !timerPaused) {
         tenMinWarningShown = true;
         showModal(
           "⚠️",
@@ -151,6 +159,16 @@
 
       updateTimerDisplay();
     }, 1000);
+  }
+
+  function toggleTimerPause() {
+    timerPaused = !timerPaused;
+    const btn = $("#timer-pause-btn");
+    if (btn) {
+      btn.classList.toggle("paused");
+      btn.textContent = timerPaused ? "▶️" : "⏸️";
+      btn.title = timerPaused ? "Resume timer" : "Pause timer";
+    }
   }
 
   function updateTimerDisplay() {
@@ -227,7 +245,7 @@
         </div>
       </div>`;
     } else if (answerRevealTiming === "during") {
-      // Learning mode: show answer during exam
+      // Learning mode: show answer during exam with self-assess
       answerSection = `
       <div class="answer-section">
         <button class="answer-toggle" id="answer-toggle-btn">
@@ -235,6 +253,11 @@
         </button>
         <div class="answer-content ${state.answerRevealed ? "visible" : ""}" id="answer-content">
           ${answerHtml}
+        </div>
+        <div class="self-assess ${state.answerRevealed ? "visible" : ""}" id="self-assess">
+          <span>How did you do?</span>
+          <button class="assess-btn correct-btn ${state.correct === true ? "correct selected" : ""}" data-result="correct">✅ Got it right</button>
+          <button class="assess-btn incorrect-btn ${state.correct === false ? "incorrect selected" : ""}" data-result="incorrect">❌ Got it wrong</button>
         </div>
       </div>`;
     } else {
@@ -283,6 +306,9 @@
     `;
 
     if ($("#answer-toggle-btn")) $("#answer-toggle-btn").addEventListener("click", toggleAnswer);
+    $$("#self-assess .assess-btn").forEach((btn) =>
+      btn.addEventListener("click", () => selfAssess(btn.dataset.result))
+    );
     if ($("#prev-btn")) $("#prev-btn").addEventListener("click", () => navigateTo(currentIndex - 1));
     if ($("#next-btn")) $("#next-btn").addEventListener("click", () => navigateTo(currentIndex + 1));
     if ($("#end-btn")) $("#end-btn").addEventListener("click", confirmEndExam);
@@ -300,14 +326,33 @@
 
     const content = $("#answer-content");
     const btn = $("#answer-toggle-btn");
+    const assess = $("#self-assess");
 
     if (state.answerRevealed) {
       content.classList.add("visible");
+      if (assess) assess.classList.add("visible");
       btn.innerHTML = "🔽 Hide Answer";
     } else {
       content.classList.remove("visible");
+      if (assess) assess.classList.remove("visible");
       btn.innerHTML = "🔼 Show Answer";
     }
+  }
+
+  function selfAssess(result) {
+    const state = questionStates[currentIndex];
+    const isCorrect = result === "correct";
+    state.correct = isCorrect;
+    state.answered = true;
+
+    // Update button states
+    $$("#self-assess .assess-btn").forEach((btn) => {
+      btn.classList.remove("selected");
+      if (btn.dataset.result === result) btn.classList.add("selected");
+    });
+
+    updateSidebar();
+    updateProgress();
   }
 
   function toggleFlag() {
@@ -331,7 +376,13 @@
     if (examEnded) {
       const assessed = questionStates.filter((s) => s.answered).length;
       el.textContent = `${assessed}/${exam.total_questions} assessed`;
+    } else if (answerRevealTiming === "during") {
+      // Learning mode: show answered count
+      const answered = questionStates.filter((s) => s.answered).length;
+      const flagged = questionStates.filter((s) => s.flagged).length;
+      el.textContent = `${answered} answered · ${flagged} flagged`;
     } else {
+      // Exam mode: show flagged count
       const flagged = questionStates.filter((s) => s.flagged).length;
       el.textContent = flagged > 0 ? `${flagged} flagged` : "0 flagged";
     }

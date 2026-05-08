@@ -31,6 +31,7 @@ Open **http://localhost:5001** in your browser.
 | Feature                     | Description                                                    |
 |-----------------------------|----------------------------------------------------------------|
 | ⏱️ **Countdown Timer**      | 2-hour timer with color-coded warnings (green → yellow → red)  |
+| ⏸️ **Pause/Resume Timer**   | Click to pause exam timer when needed (breaks, urgent tasks)   |
 | ⚠️ **10-Minute Warning**    | Modal popup when 10 minutes remain                             |
 | 🔀 **Randomized Questions** | Questions shuffled and weighted by CKA domain proportions      |
 | 📊 **Question Palette**     | Sidebar navigation with answered/flagged/current status        |
@@ -51,7 +52,7 @@ Before each exam, you choose:
 
 ### 2. Answer Reveal Timing
 - **At the end** (default, recommended): Answers hidden during exam — realistic CKA practice
-- **During exam**: Answers can be toggled during the exam — learning mode
+- **During exam**: Answers can be toggled during the exam AND you can mark each question as correct/wrong immediately for instant feedback — learning mode
 
 ## 📊 Scoring System
 

@@ -317,6 +317,35 @@ body::before {
 
 .topbar-center { display: flex; align-items: center; gap: 0.75rem; }
 
+.btn-timer-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.btn-timer-control:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-card-hover);
+}
+
+.btn-timer-control.paused {
+  border-color: var(--yellow);
+  color: var(--yellow);
+  background: var(--yellow-glow);
+}
+
 /* Timer */
 .timer {
   display: flex;
@@ -686,6 +715,23 @@ body::before {
 }
 
 /* Self Assessment (results screen inline buttons) */
+
+.self-assess {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+
+.self-assess.visible {
+  display: flex;
+  animation: slideDown 0.25s ease;
+}
 
 .self-assess span {
   font-size: 0.85rem;
