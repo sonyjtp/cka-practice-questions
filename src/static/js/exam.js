@@ -108,6 +108,10 @@
       renderQuestion();
       startTimer();
 
+      // Bind topbar end button
+      const topbarEndBtn = $("#topbar-end-btn");
+      if (topbarEndBtn) topbarEndBtn.addEventListener("click", confirmEndExam);
+
       // Update progress
       updateProgress();
     } catch (e) {
@@ -220,16 +224,19 @@
       <div class="question-body">${questionHtml}</div>
 
       <div class="answer-section">
+        <div class="attempt-notice">
+          💡 <strong>Attempt this task</strong> in your Kubernetes environment first, then reveal the answer to self-assess.
+        </div>
         <button class="answer-toggle" id="answer-toggle-btn">
-          ${state.answerRevealed ? "🔽 Hide Answer" : "🔼 Show Answer"}
+          ${state.answerRevealed ? "🔽 Hide Answer" : "🔼 Show Answer & Self-Assess"}
         </button>
         <div class="answer-content ${state.answerRevealed ? "visible" : ""}" id="answer-content">
           ${answerHtml}
         </div>
-        <div class="self-assess" id="self-assess" style="display: ${state.answerRevealed ? "flex" : "none"}">
+        <div class="self-assess ${state.answerRevealed ? "visible" : ""}" id="self-assess">
           <span>How did you do?</span>
-          <button class="assess-btn ${state.correct === true ? "correct selected" : ""}" data-result="correct">✅ Got it right</button>
-          <button class="assess-btn ${state.correct === false ? "incorrect selected" : ""}" data-result="incorrect">❌ Got it wrong</button>
+          <button class="assess-btn correct-btn ${state.correct === true ? "correct selected" : ""}" data-result="correct">✅ Got it right</button>
+          <button class="assess-btn incorrect-btn ${state.correct === false ? "incorrect selected" : ""}" data-result="incorrect">❌ Got it wrong</button>
         </div>
       </div>
 
@@ -240,11 +247,12 @@
             ${state.flagged ? "🚩 Flagged" : "🏳️ Flag for Review"}
           </button>
         </div>
-        ${
-          currentIndex === exam.questions.length - 1
-            ? '<button class="btn btn-danger" id="end-btn">End Exam</button>'
-            : '<button class="btn btn-primary" id="next-btn">Next →</button>'
-        }
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          ${currentIndex < exam.questions.length - 1
+            ? '<button class="btn btn-primary" id="next-btn">Next →</button>'
+            : ''}
+          <button class="btn btn-danger" id="end-btn">🏁 End Exam</button>
+        </div>
       </div>
     `;
 
@@ -273,12 +281,12 @@
 
     if (state.answerRevealed) {
       content.classList.add("visible");
+      assess.classList.add("visible");
       btn.innerHTML = "🔽 Hide Answer";
-      assess.style.display = "flex";
     } else {
       content.classList.remove("visible");
-      btn.innerHTML = "🔼 Show Answer";
-      assess.style.display = "none";
+      assess.classList.remove("visible");
+      btn.innerHTML = "🔼 Show Answer & Self-Assess";
     }
   }
 
@@ -397,15 +405,17 @@
     exam.questions.forEach((q, i) => {
       const s = questionStates[i];
       let icon = "⬜";
-      if (s.correct === true) icon = "✅";
-      else if (s.correct === false) icon = "❌";
-      else if (!s.answered) icon = "⬜";
+      let statusClass = "";
+      if (s.correct === true) { icon = "✅"; statusClass = "rq-correct"; }
+      else if (s.correct === false) { icon = "❌"; statusClass = "rq-incorrect"; }
+      else { icon = "⬜"; statusClass = "rq-unanswered"; }
       questionsHtml += `
-        <div class="rq-item">
+        <div class="rq-item ${statusClass}" data-index="${i}" style="cursor:pointer" title="Click to review">
           <span class="rq-status">${icon}</span>
           <span class="rq-num">${i + 1}.</span>
           <span class="rq-title">${escapeHtml(q.title)}</span>
           <span class="difficulty-badge ${q.difficulty}" style="font-size:0.65rem">${q.difficulty}</span>
+          <span class="rq-review-link">Review →</span>
         </div>`;
     });
 
@@ -459,9 +469,31 @@
       </div>
 
       <div class="results-actions">
+        <button class="btn btn-secondary" id="review-btn">📖 Review Answers</button>
         <button class="btn btn-primary" onclick="location.reload()">🔄 New Exam</button>
       </div>
     `;
+
+    // Bind review links in question list
+    resultsScreen.querySelectorAll(".rq-item[data-index]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const idx = parseInt(el.dataset.index);
+        currentIndex = idx;
+        // Reveal answer on review
+        questionStates[idx].answerRevealed = true;
+        showScreen(examScreen);
+        renderQuestion();
+      });
+    });
+
+    // Review all button — go back to first unanswered/incorrect, or start
+    document.getElementById("review-btn").addEventListener("click", () => {
+      const firstIdx = questionStates.findIndex((s) => !s.answered || s.correct === false);
+      currentIndex = firstIdx >= 0 ? firstIdx : 0;
+      questionStates[currentIndex].answerRevealed = true;
+      showScreen(examScreen);
+      renderQuestion();
+    });
   }
 
   // ===== MODAL =====

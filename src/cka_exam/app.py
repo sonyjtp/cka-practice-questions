@@ -7,13 +7,15 @@ generating randomized exams from markdown question files.
 
 import os
 from flask import Flask, jsonify, render_template, request
-from question_parser import scan_all_questions, get_domain_summary
-from exam_generator import generate_exam, DEFAULT_QUESTION_COUNT
+from .question_parser import scan_all_questions, get_domain_summary
+from .exam_generator import generate_exam, DEFAULT_QUESTION_COUNT
 
-app = Flask(__name__)
+app = Flask(__name__,
+            template_folder=os.path.join(os.path.dirname(__file__), '..', 'templates'),
+            static_folder=os.path.join(os.path.dirname(__file__), '..', 'static'))
 
-# Base directory for question files
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Base directory for question files (data directory)
+BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data')
 
 
 @app.route("/")
