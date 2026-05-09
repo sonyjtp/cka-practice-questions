@@ -30,7 +30,10 @@ def api_generate_exam():
     question_count = request.args.get("count", DEFAULT_QUESTION_COUNT, type=int)
     question_count = max(1, min(question_count, 50))  # clamp to [1, 50]
 
-    exam = generate_exam(question_count=question_count, base_dir=BASE_DIR)
+    # Get topics filter if provided
+    topics = request.args.get("topics", None, type=str)
+
+    exam = generate_exam(question_count=question_count, base_dir=BASE_DIR, topics=topics)
     return jsonify(exam)
 
 

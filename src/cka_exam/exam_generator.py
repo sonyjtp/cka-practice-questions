@@ -28,9 +28,15 @@ DIFFICULTY_DISTRIBUTION = {
 }
 
 
-def generate_exam(question_count=DEFAULT_QUESTION_COUNT, base_dir=None):
+def generate_exam(question_count=DEFAULT_QUESTION_COUNT, base_dir=None, topics=None):
     """
     Generate a randomized CKA-style exam.
+
+    Args:
+        question_count: Number of questions to generate
+        base_dir: Base directory for question files
+        topics: Optional list/set of domains to filter by. If provided, only questions
+                from these domains will be used.
 
     Returns a dict with exam metadata and a list of selected questions.
     """
@@ -42,6 +48,22 @@ def generate_exam(question_count=DEFAULT_QUESTION_COUNT, base_dir=None):
             "questions": [],
             "total_questions": 0,
         }
+
+    # Filter by topics if specified
+    if topics:
+        # Convert topics to set for easier checking
+        if isinstance(topics, str):
+            topics_set = {t.strip() for t in topics.split("|")}
+        else:
+            topics_set = set(topics)
+        all_questions = [q for q in all_questions if q["domain"] in topics_set]
+
+        if not all_questions:
+            return {
+                "error": f"No questions found for selected topics: {', '.join(topics_set)}",
+                "questions": [],
+                "total_questions": 0,
+            }
 
     # Cap question count at available questions
     question_count = min(question_count, len(all_questions))

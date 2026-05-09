@@ -95,13 +95,24 @@
       </div>
     </div>
 
-    <div class="question-count-control">
-      <label for="question-count-slider">Questions:</label>
-      <input type="range" id="question-count-slider" min="5" max="25" value="17" step="1">
-      <span class="count-display" id="count-display">17</span>
-    </div>
+        <div class="question-count-control">
+          <label for="question-count-slider">📌 Questions per Exam:</label>
+          <input type="range" id="question-count-slider" min="5" max="50" value="17" />
+          <span class="count-display" id="count-display">17</span>
+        </div>
 
-    <div class="assessment-mode-control">
+        <div class="topic-filter-control">
+          <label style="display:flex; align-items: center; gap: 0.75rem; font-size: 0.95rem; font-weight: 500; color: var(--text-primary); cursor: pointer; margin-bottom: 0.5rem;">
+            <input type="checkbox" id="topic-filter-toggle" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent);" />
+            Filter by specific topics?
+          </label>
+          <div id="topics-list" style="display: none; background: rgba(99,102,241,0.05); border: 1px solid rgba(99,102,241,0.2); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1rem;">
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Select topics:</p>
+            <div id="topics-checkboxes" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+          </div>
+        </div>
+
+        <div class="assessment-mode-control">
       <label for="assessment-mode-toggle">
         <input type="checkbox" id="assessment-mode-toggle" checked>
         <span>📖 Enable self-assessment after exam</span>

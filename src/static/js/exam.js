@@ -42,19 +42,102 @@
   const countDisplay = $("#count-display");
   const availableDisplay = $("#available-count");
 
-  // ===== INIT =====
-  async function init() {
-    try {
-      const res = await fetch("/api/domains");
-      const domains = await res.json();
-      let total = 0;
-      for (const d of Object.values(domains)) total += d.total;
-      if (availableDisplay) availableDisplay.textContent = total;
-      if (countSlider) {
-        countSlider.max = Math.min(total, 50);
-        countSlider.value = Math.min(17, total);
-        countDisplay.textContent = countSlider.value;
-      }
+   let selectedTopics = new Set(); // Track selected topics
+
+   // Domain descriptions
+   const domainDescriptions = {
+     "Cluster Architecture, Installation & Configuration": "Core cluster setup, RBAC, security, etcd, upgrades, kubeadm",
+     "Workloads & Scheduling": "Deployments, pods, scheduling, affinity, taints/tolerations, StatefulSets, DaemonSets",
+     "Services & Networking": "Services, ingress, networking policies, DNS, kube-proxy, pod networking",
+     "Storage": "PersistentVolumes, PersistentVolumeClaims, storage classes, volume management",
+     "Troubleshooting": "Debugging cluster and application issues, logs, debugging strategies",
+     "Logging & Monitoring": "Application logging, cluster logging, monitoring, observability"
+   };
+
+   // ===== INIT =====
+   async function init() {
+     try {
+       const res = await fetch("/api/domains");
+       const domains = await res.json();
+       let total = 0;
+       for (const d of Object.values(domains)) total += d.total;
+       if (availableDisplay) availableDisplay.textContent = total;
+       if (countSlider) {
+         countSlider.max = Math.min(total, 50);
+         countSlider.value = Math.min(17, total);
+         countDisplay.textContent = countSlider.value;
+       }
+
+       // Populate topics list
+       const topicsCheckboxes = $("#topics-checkboxes");
+       if (topicsCheckboxes) {
+         Object.keys(domains).sort().forEach(domain => {
+           // Container for the checkbox and text
+           const checkboxContainer = document.createElement("div");
+           checkboxContainer.style.display = "flex";
+           checkboxContainer.style.alignItems = "flex-start";
+           checkboxContainer.style.gap = "0.5rem";
+           checkboxContainer.style.marginBottom = "0.25rem";
+
+           const checkbox = document.createElement("input");
+           checkbox.type = "checkbox";
+           checkbox.value = domain;
+           checkbox.style.width = "16px";
+           checkbox.style.height = "16px";
+           checkbox.style.cursor = "pointer";
+           checkbox.style.accentColor = "var(--accent)";
+           checkbox.style.marginTop = "2px";
+           checkbox.style.flexShrink = "0";
+
+           // Text container for title and description
+           const textContainer = document.createElement("div");
+           textContainer.style.display = "flex";
+           textContainer.style.flexDirection = "column";
+           textContainer.style.gap = "0.2rem";
+           textContainer.style.cursor = "pointer";
+
+           const labelText = document.createElement("span");
+           labelText.textContent = `${domain} (${domains[domain].total})`;
+           labelText.style.fontWeight = "500";
+           labelText.style.color = "var(--text-primary)";
+           labelText.style.fontSize = "0.85rem";
+
+           const descriptionText = document.createElement("span");
+           descriptionText.textContent = domainDescriptions[domain] || "Practice questions";
+           descriptionText.style.fontSize = "0.75rem";
+           descriptionText.style.color = "var(--text-muted)";
+           descriptionText.style.fontStyle = "italic";
+
+           textContainer.appendChild(labelText);
+           textContainer.appendChild(descriptionText);
+           checkboxContainer.appendChild(checkbox);
+           checkboxContainer.appendChild(textContainer);
+
+           // Create a wrapper label for better click behavior
+           const label = document.createElement("label");
+           label.style.display = "flex";
+           label.style.cursor = "pointer";
+           label.style.width = "100%";
+           label.appendChild(checkboxContainer);
+
+           topicsCheckboxes.appendChild(label);
+
+           checkbox.addEventListener("change", () => {
+             if (checkbox.checked) {
+               selectedTopics.add(domain);
+             } else {
+               selectedTopics.delete(domain);
+             }
+           });
+
+           // Allow clicking the text to toggle checkbox
+           textContainer.addEventListener("click", (e) => {
+             e.stopPropagation();
+             checkbox.checked = !checkbox.checked;
+             checkbox.dispatchEvent(new Event("change"));
+           });
+         });
+       }
     } catch (e) {
       console.error("Failed to load domains:", e);
     }
@@ -62,6 +145,23 @@
     if (countSlider) {
       countSlider.addEventListener("input", () => {
         countDisplay.textContent = countSlider.value;
+      });
+    }
+
+    // Topic filter toggle
+    const topicFilterToggle = $("#topic-filter-toggle");
+    const topicsList = $("#topics-list");
+    if (topicFilterToggle) {
+      topicFilterToggle.addEventListener("change", () => {
+        if (topicFilterToggle.checked) {
+          topicsList.style.display = "block";
+        } else {
+          topicsList.style.display = "none";
+          selectedTopics.clear();
+          document.querySelectorAll("#topics-checkboxes input[type='checkbox']").forEach(cb => {
+            cb.checked = false;
+          });
+        }
       });
     }
 
@@ -87,8 +187,16 @@
     $(".question-area").innerHTML =
       '<div class="loading"><div class="spinner"></div><p>Generating exam…</p></div>';
 
-    try {
-      const res = await fetch(`/api/exam?count=${count}`);
+     try {
+       // Build URL with topic filter
+       let url = `/api/exam?count=${count}`;
+       if (selectedTopics.size > 0) {
+         const topicsParam = Array.from(selectedTopics).join("|");
+         url += `&topics=${encodeURIComponent(topicsParam)}`;
+         console.log("Topics filter URL:", url); // Debug
+       }
+
+      const res = await fetch(url);
       exam = await res.json();
 
       if (exam.error || !exam.questions || exam.questions.length === 0) {

@@ -20,6 +20,8 @@ FOLDER_TO_DOMAIN = {
     "networking": "Services & Networking",
     "storage": "Storage",
     "troubleshooting": "Troubleshooting",
+    "security": "Cluster Architecture, Installation & Configuration",
+    "logging-monitoring": "Logging & Monitoring",
 }
 
 # CKA domain weights (percentage of exam)
@@ -29,6 +31,7 @@ DOMAIN_WEIGHTS = {
     "Services & Networking": 20,
     "Storage": 10,
     "Troubleshooting": 30,
+    "Logging & Monitoring": 10,  # Bonus/supplementary domain
 }
 
 # Difficulty levels

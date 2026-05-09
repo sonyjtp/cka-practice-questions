@@ -49,25 +49,35 @@ python run.py
 
 Open **http://localhost:5001** in your browser.
 
+### First Exam? Try This:
+1. Leave all default settings
+2. Click **"🚀 Start Exam"** to generate 17 randomized questions
+3. Work through each question (answers hidden until you end the exam)
+4. Click **"🏁 End Exam"** to see results and self-assess
+
+**Want to focus on specific topics?**  
+Check **"Filter by specific topics?"** on the start screen and select the domains you want to practice. Each domain shows a helpful description of what it covers.
+
 ---
 
 ## 🎯 Exam Simulator Features
 
-| Feature                          | Description                                                            |
-|----------------------------------|------------------------------------------------------------------------|
-| ⏱️ **Countdown Timer**           | 2-hour timer with color-coded warnings (green → yellow → red)          |
-| ⏸️ **Pause/Resume Timer**        | Click to pause exam timer when needed (breaks, urgent tasks)           |
-| ⚠️ **10-Minute Warning**         | Modal popup when 10 minutes remain                                      |
-| 🔀 **Randomized Questions**      | Questions shuffled and weighted by CKA domain proportions              |
-| 📊 **Question Palette**          | Sidebar navigation with answered/flagged/current status                |
-| 🚩 **Flag for Review**           | Mark questions to revisit before ending the exam                       |
-| 🔼 **Show/Hide Answers**         | View answers during or after exam (configurable)                       |
-| 📝 **During-Exam Assessment**    | Mark answers as correct/wrong during exam for immediate feedback       |
-| 📈 **Results Dashboard**         | Live score calculation, domain breakdown, time, and details            |
-| 🎚️ **Configurable Count**       | Slider to choose 5–25 questions per exam                               |
-| 💯 **Weighted Scoring**          | Points based on difficulty: Easy (5) → Medium (10) → Hard (15)         |
-| 🎓 **Flexible Assessment**       | Toggle self-assessment on/off; reveal answers during or at end         |
-| 🔧 **Comprehensive Troubleshooting** | 37+ debugging questions covering cluster issues, certificates, RBAC  |
+| Feature                              | Description                                                           |
+|--------------------------------------|-----------------------------------------------------------------------|
+| ⏱️ **Countdown Timer**               | 2-hour timer with color-coded warnings (green → yellow → red)         |
+| ⏸️ **Pause/Resume Timer**            | Click to pause exam timer when needed (breaks, urgent tasks)          |
+| ⚠️ **10-Minute Warning**             | Modal popup when 10 minutes remain                                    |
+| 🔀 **Randomized Questions**          | Questions shuffled and weighted by CKA domain proportions             |
+| 📊 **Question Palette**              | Sidebar navigation with answered/flagged/current status               |
+| 🚩 **Flag for Review**               | Mark questions to revisit before ending the exam                      |
+| 🔼 **Show/Hide Answers**             | View answers during or after exam (configurable)                      |
+| 📝 **During-Exam Assessment**        | Mark answers as correct/wrong during exam for immediate feedback      |
+| 📈 **Results Dashboard**             | Live score calculation, domain breakdown, time, and details           |
+| 🎚️ **Configurable Count**           | Slider to choose 5–50 questions per exam                              |
+| 🔎 **Topic Filtering**               | Filter exams by CKA domain (e.g., focus on Cluster Architecture only) |
+| 💯 **Weighted Scoring**              | Points based on difficulty: Easy (5) → Medium (10) → Hard (15)        |
+| 🎓 **Flexible Assessment**           | Toggle self-assessment on/off; reveal answers during or at end        |
+| 🔧 **Comprehensive Troubleshooting** | 37+ debugging questions covering cluster issues, certificates, RBAC   |
 
 ---
 
@@ -82,6 +92,17 @@ Before each exam, you choose:
 ### 2. Answer Reveal Timing
 - **At the end** (default, recommended): Answers hidden during exam — realistic CKA practice
 - **During exam**: Answers can be toggled during the exam AND you can mark each question as correct/wrong immediately for instant feedback — learning mode
+
+### 3. Topic Filter (Optional)
+Check **"Filter by specific topics?"** to focus on one or more CKA exam domains:
+- **Cluster Architecture, Installation & Configuration** — Core cluster setup, RBAC, security, etcd, upgrades, kubeadm
+- **Workloads & Scheduling** — Deployments, pods, scheduling, affinity, taints/tolerations, StatefulSets, DaemonSets
+- **Services & Networking** — Services, ingress, networking policies, DNS, kube-proxy, pod networking
+- **Storage** — PersistentVolumes, PersistentVolumeClaims, storage classes, volume management
+- **Troubleshooting** — Debugging cluster and application issues, logs, debugging strategies
+- **Logging & Monitoring** — Application logging, cluster logging, monitoring, observability
+
+Each domain includes a brief description to help you quickly understand the coverage. Select one or more domains to practice targeted skills or create custom "focused" exams.
 
 ---
 
@@ -123,6 +144,7 @@ Passing Score: 66% (same as real CKA)
 | Services & Networking                              | 20%    |
 | Storage                                            | 10%    |
 | Troubleshooting                                    | 30%    |
+| Logging & Monitoring                               | 10%    |
 
 ---
 
@@ -150,11 +172,12 @@ cka-practice-questions/
 
 | Folder Name                          | CKA Exam Domain                                    | Weight |
 |--------------------------------------|----------------------------------------------------|--------|
-| `cluster-architecture`               | Cluster Architecture, Installation & Configuration | 25%    |
+| `cluster-architecture` / `security`  | Cluster Architecture, Installation & Configuration | 25%    |
 | `scheduling` / `workloads`           | Workloads & Scheduling                             | 15%    |
 | `services-networking` / `networking` | Services & Networking                              | 20%    |
 | `storage`                            | Storage                                            | 10%    |
 | `troubleshooting`                    | Troubleshooting                                    | 30%    |
+| `logging-monitoring`                 | Logging & Monitoring                               | 10%    |
 
 ### Question File Format
 
@@ -210,12 +233,17 @@ Answer content with code blocks, explanations, etc.
 
 ## 🛠️ API Endpoints
 
-| Endpoint             | Method | Description                         |
-|----------------------|--------|-------------------------------------|
-| `/`                  | GET    | Exam simulator UI                   |
-| `/api/exam?count=17` | GET    | Generate a random exam (JSON)       |
-| `/api/questions`     | GET    | List all available questions        |
-| `/api/domains`       | GET    | Domain summary with question counts |
+| Endpoint                                     | Method | Description                         |
+|----------------------------------------------|--------|-------------------------------------|
+| `/`                                          | GET    | Exam simulator UI                   |
+| `/api/exam?count=17`                         | GET    | Generate a random exam (JSON)       |
+| `/api/exam?count=17&topics=Domain1\|Domain2` | GET    | Generate exam filtered by domain(s) |
+| `/api/questions`                             | GET    | List all available questions        |
+| `/api/domains`                               | GET    | Domain summary with question counts |
+
+**Topic Filter Examples:**
+- `?topics=Cluster%20Architecture,%20Installation%20%26%20Configuration` — Filter to Cluster Architecture only
+- `?topics=Cluster%20Architecture,%20Installation%20%26%20Configuration|Workloads%20%26%20Scheduling` — Multiple domains (pipe-separated)
 
 ---
 
@@ -225,12 +253,11 @@ Answer content with code blocks, explanations, etc.
 
 ### By Domain:
 
-- **Cluster Architecture** (57 questions) — kubeadm, etcd backup & restore, RBAC, admission controllers, certificates, kustomize, helm
-- **Workloads & Scheduling** (116 questions) — Deployments, DaemonSets, StatefulSets, init containers, resource limits, taints/tolerations, node affinity
+- **Cluster Architecture, Installation & Configuration** (84 questions) — kubeadm, etcd backup & restore, RBAC, admission controllers, certificates, security contexts, image security, kustomize, helm
+- **Workloads & Scheduling** (116 questions) — Deployments, DaemonSets, StatefulSets, init containers, resource limits, taints/tolerations, node affinity, priority classes
 - **Services & Networking** (59 questions) — Services, Ingress, NetworkPolicy, CoreDNS, CNI plugins, kube-proxy, service networking
 - **Storage** (21 questions) — PersistentVolumes, PersistentVolumeClaims, StorageClasses, CSI, volume mounts
 - **Logging & Monitoring** (20 questions) — Cluster logging, application logging, metrics, observability
-- **Security** (27 questions) — TLS certificates, kubeconfig, security contexts, image security, RBAC deep dives
 - **Troubleshooting** (37 questions)
   - Cluster debugging (6 questions) — Pending pods, CrashLoopBackOff, node status, services, volumes, multi-issue scenarios
   - Application & Network debugging (6 questions) — OOMKilled, init containers, deployments, Ingress, API server, etcd recovery
