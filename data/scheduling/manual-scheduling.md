@@ -68,6 +68,11 @@ kubectl get pods -n kube-system | grep scheduler
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Assigning a `schedulerName` to a Pod
 > ⏱️ **Recommended Time: 4 minutes**
 
@@ -104,10 +109,6 @@ Scheduler: my-scheduler
 > **Key Concept:** `spec.schedulerName` tells Kubernetes which scheduler should handle this pod. If the named scheduler is not running, the pod will remain in `Pending` state indefinitely. The default value is `default-scheduler` and does not need to be specified explicitly.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -234,6 +235,7 @@ kubectl get pod pending-app -o wide
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 
@@ -390,43 +392,3 @@ kubectl get pods -o wide | grep -E 'static-web|manual-web'
 
 ---
 
-## 📌 Quick Reference
-
-| Field / Object | Purpose |
-|----------------|---------|
-| `spec.nodeName` | Directly assign a pod to a node, bypassing the scheduler |
-| `spec.schedulerName` | Name of the scheduler responsible for this pod (default: `default-scheduler`) |
-| `Binding` object | What the scheduler creates internally to bind pods to nodes |
-| `nodeSelector` | Hints to the scheduler to place a pod on nodes with matching labels |
-| Static Pod path | `/etc/kubernetes/manifests/` — managed by kubelet, not the scheduler |
-
-### Useful Commands
-
-```bash
-# Check if the scheduler is running
-kubectl get pods -n kube-system | grep scheduler
-
-# View pod placement
-kubectl get pods -o wide
-
-# Check why a pod is Pending
-kubectl describe pod <pod-name>
-
-# Check schedulerName on a pod
-kubectl get pod <pod-name> -o yaml | grep schedulerName
-
-# Manually assign a node
-kubectl patch pod <pod-name> -p '{"spec":{"nodeName":"<node-name>"}}'
-
-# Get pod's assigned node
-kubectl get pod <pod-name> -o jsonpath='{.spec.nodeName}'
-```
-
-### Pending Pod Diagnosis — Cheat Sheet
-
-```
-No FailedScheduling event + schedulerName set  →  Named scheduler is not running
-FailedScheduling: insufficient resources       →  Node capacity issue
-FailedScheduling: untolerated taint            →  Add toleration or remove taint
-FailedScheduling: no matching node             →  Check nodeSelector / node affinity
-```

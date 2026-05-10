@@ -117,6 +117,7 @@ kubectl describe pod root-attempt | grep -A 5 "Events:"
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -299,10 +300,6 @@ kubectl exec privileged-pod -- modprobe nf_conntrack
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — AllowPrivilegeEscalation
 > ⏱️ **Recommended Time: 8 minutes**
 
@@ -368,6 +365,11 @@ containers:
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 7 — Seccomp Profiles
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -425,58 +427,3 @@ seccompProfile:
 
 ---
 
-## 📌 Quick Reference
-
-### Security Context Fields
-
-```yaml
-# Pod-level (spec.securityContext)
-securityContext:
-  runAsUser: 1000              # UID to run as
-  runAsGroup: 3000             # GID to run as
-  runAsNonRoot: true           # fail if UID would be 0
-  fsGroup: 2000                # GID for volume ownership
-  seccompProfile:
-    type: RuntimeDefault
-
-# Container-level (spec.containers[].securityContext)
-securityContext:
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
-  privileged: false
-  capabilities:
-    drop: [ALL]
-    add: [NET_BIND_SERVICE]
-```
-
-### Security Hardening Checklist
-
-| Setting                    | Recommended Value | Reason                    |
-|----------------------------|-------------------|---------------------------|
-| `runAsNonRoot`             | `true`            | Prevent root container    |
-| `runAsUser`                | non-zero          | Explicit non-root UID     |
-| `allowPrivilegeEscalation` | `false`           | Block sudo/setuid         |
-| `readOnlyRootFilesystem`   | `true`            | Prevent filesystem writes |
-| `capabilities.drop`        | `[ALL]`           | Least privilege           |
-| `privileged`               | `false` (default) | No host access            |
-| `seccompProfile.type`      | `RuntimeDefault`  | Restrict syscalls         |
-
-### Useful Commands
-
-```bash
-# Check security context of a running pod
-kubectl get pod <name> -o jsonpath='{.spec.securityContext}'
-kubectl get pod <name> -o jsonpath='{.spec.containers[0].securityContext}'
-
-# Verify UID inside container
-kubectl exec <pod> -- id
-
-# Check capabilities
-kubectl exec <pod> -- cat /proc/1/status | grep Cap
-```
-
-### Related Topics
-
-- 🔗 [Image Security](./image-security.md) — control which images can be pulled
-- 🔗 [Network Policies](../networking/network-policies.md) — network-level security complement to pod security contexts
-- 🔗 [RBAC](../cluster-architecture/rbac.md) — API-level access control; security contexts control OS-level access

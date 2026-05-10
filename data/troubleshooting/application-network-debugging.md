@@ -93,6 +93,11 @@ kubectl debug pod <pod-name> -n <namespace> -it --image=busybox
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Check Deployment Rollout Status
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -142,10 +147,6 @@ kubectl describe pod <pod-name> -n <namespace>
 **Key Concept:** A Deployment's status depends on its ReplicaSets and Pods. Use `kubectl get rs` to see replication status and `kubectl describe pod` to debug individual pod failures.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -265,6 +266,7 @@ systemctl restart kube-apiserver kube-controller-manager kube-scheduler
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 

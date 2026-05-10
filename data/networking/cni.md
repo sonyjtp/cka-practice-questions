@@ -100,6 +100,7 @@ kubectl get pod <pod-name> -o jsonpath='{.status.podIP}'
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -210,10 +211,6 @@ kubectl get pods -o wide    # new pods on node2 should start
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 5 — Inspect CNI Network Interface on a Pod
 > ⏱️ **Recommended Time: 8 minutes**
 
@@ -261,6 +258,11 @@ ip route | grep 10.244.2.0
 > **Key Concept:** Each pod gets a **veth pair** — one end (`eth0`) inside the pod's network namespace, the other end on the host. Host-end veth interfaces are attached to a bridge (`cni0`, `weave`, `cbr0`) or managed directly via routing rules (Calico in BGP mode). Understanding this path is essential for troubleshooting: pod → veth → bridge → routing → tunnel/BGP → remote node → bridge → veth → pod.
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 
@@ -327,34 +329,3 @@ kubectl get pod test -o jsonpath='{.status.podIP}'
 
 ---
 
-## 📌 Quick Reference
-
-```bash
-# CNI config location
-/etc/cni/net.d/               # config files (lowest number = active)
-
-# CNI binary location
-/opt/cni/bin/                 # bridge, host-local, calico, flannel, ...
-
-# IPAM allocations (host-local)
-/var/lib/cni/networks/<name>/
-
-# Pod CIDR per node
-kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.podCIDR}{"\n"}{end}'
-
-# Cluster pod CIDR
-cat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep cluster-cidr
-
-# CNI DaemonSet pods
-kubectl get pods -n kube-system | grep -E "calico|weave|flannel|cilium"
-
-# Pod's network interface
-kubectl exec <pod> -- ip addr
-kubectl exec <pod> -- ip route
-```
-
-### Related Topics
-
-- 🔗 [Pod Networking](./pod-networking.md) — veth pairs, network namespaces, bridges
-- 🔗 [Cluster Networking](./cluster-networking.md) — node-to-node communication
-- 🔗 [Service Networking](./service-networking.md) — kube-proxy, iptables, ClusterIP

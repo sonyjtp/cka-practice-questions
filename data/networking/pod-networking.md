@@ -102,6 +102,7 @@ kubectl get pods -o wide --all-namespaces
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -222,10 +223,6 @@ Common causes:
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 5 — Manually Create a Network Namespace and Connect It to a Bridge
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -277,6 +274,11 @@ ip netns exec pod-ns-1 ping -c 2 8.8.8.8   # external connectivity
 > **Key Concept:** This exercise mirrors exactly what a CNI plugin does automatically. The steps are: create namespace → create veth pair → move one end into namespace → attach other end to bridge → assign IPs → add default route. Understanding this manually helps you diagnose CNI failures — if a pod can't reach its gateway, the veth may not be attached to the bridge; if cross-namespace traffic fails, the bridge or routing may be missing.
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 
@@ -349,51 +351,3 @@ Pod network namespace sharing:
 
 ---
 
-## 📌 Quick Reference
-
-### Pod Networking Commands
-
-```bash
-# Pod IP and node
-kubectl get pods -o wide
-
-# Pod's network interfaces (from inside)
-kubectl exec <pod> -- ip addr
-kubectl exec <pod> -- ip route
-kubectl exec <pod> -- netstat -tlnp   # or ss -tlnp
-
-# Find pod's PID on node
-crictl pods | grep <pod-name>
-crictl inspect <pod-id> | grep pid
-
-# Enter pod's network namespace from host
-nsenter -t <PID> -n ip addr
-nsenter -t <PID> -n ip route
-nsenter -t <PID> -n ss -tlnp
-
-# Trace veth pair
-# In pod: ip link show eth0  → note peer index (e.g., @if8)
-# On host: ip link | grep "^8:"  → find veth name
-```
-
-### Key File/Directory Locations
-
-```
-/var/run/netns/           Network namespace files
-/sys/class/net/           Network interfaces on host
-/proc/<PID>/net/          Network info for a process's namespace
-```
-
-### Networking Model Rules
-
-1. Every pod gets a unique IP
-2. Pods communicate without NAT (flat network)
-3. Nodes can communicate with all pods without NAT
-4. Pod IP is the same from inside and outside the pod
-
-### Related Topics
-
-- 🔗 [CNI](./cni.md) — how pod network interfaces are created
-- 🔗 [Cluster Networking](./cluster-networking.md) — cross-node pod communication
-- 🔗 [Service Networking](./service-networking.md) — stable IPs via Services
-- 🔗 [Network Policies](./network-policies.md) — controlling pod traffic

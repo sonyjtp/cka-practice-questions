@@ -98,6 +98,7 @@ kubectl run attacker --image=busybox:1.28 --restart=Never -- \
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -289,10 +290,6 @@ kubectl run attacker --image=busybox:1.28 --restart=Never -- \
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Cross-Namespace Policy with Combined Selectors
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -379,6 +376,11 @@ ingress:
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 7 — Troubleshoot a NetworkPolicy Blocking Expected Traffic
 > ⏱️ **Recommended Time: 10 minutes**
 
@@ -441,94 +443,3 @@ Systematic troubleshooting checklist:
 
 ---
 
-## 📌 Quick Reference
-
-### AND vs OR Logic (Critical Exam Topic)
-
-```yaml
-# AND — same list item (one dash):
-from:
-- namespaceSelector:
-    matchLabels:
-      team: finance
-  podSelector:          # ← indented under same dash = AND
-    matchLabels:
-      role: auditor
-
-# OR — separate list items (two dashes):
-from:
-- namespaceSelector:
-    matchLabels:
-      team: finance
-- podSelector:          # ← new dash = OR
-    matchLabels:
-      role: auditor
-```
-
-### Default Behaviours
-
-| Situation | Default Behaviour |
-|-----------|-----------------|
-| No NetworkPolicy selects a pod | All ingress and egress allowed |
-| A policy selects a pod | Pod is isolated; only explicitly allowed traffic passes |
-| Multiple policies select a pod | Union of all rules (additive) |
-| `policyTypes: [Ingress]` with no ingress rules | All ingress denied |
-| `policyTypes: [Egress]` with no egress rules | All egress denied |
-
-### Common Patterns
-
-```yaml
-# Deny all ingress
-spec:
-  podSelector: {}
-  policyTypes: [Ingress]
-
-# Deny all egress
-spec:
-  podSelector: {}
-  policyTypes: [Egress]
-
-# Allow all ingress (explicit)
-spec:
-  podSelector: {}
-  policyTypes: [Ingress]
-  ingress:
-  - {}   # empty rule = allow all
-
-# Allow DNS egress only
-egress:
-- to:
-  - namespaceSelector:
-      matchLabels:
-        kubernetes.io/metadata.name: kube-system
-  ports:
-  - protocol: UDP
-    port: 53
-  - protocol: TCP
-    port: 53
-```
-
-### Useful Commands
-
-```bash
-# List all NetworkPolicies
-kubectl get networkpolicy -A
-
-# Describe a policy (human-readable)
-kubectl describe networkpolicy <name> -n <namespace>
-
-# Check pod labels (for selector matching)
-kubectl get pods --show-labels -n <namespace>
-
-# Check namespace labels
-kubectl get namespace --show-labels
-
-# Label a namespace
-kubectl label namespace <name> <key>=<value>
-```
-
-### Related Topics
-
-- 🔗 [Services](./services.md) — NetworkPolicies filter pod-to-pod and pod-to-Service traffic
-- 🔗 [Ingress](./ingress.md) — HTTP-level routing; NetworkPolicy operates at L3/L4
-- 🔗 [Namespaces](../cluster-architecture/namespaces.md) — namespace labels are used by `namespaceSelector`

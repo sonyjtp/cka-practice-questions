@@ -169,6 +169,11 @@ Pod anti-affinity scenarios:
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Combine affinity with node affinity
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -278,10 +283,6 @@ affinity:
 > **Key Concept:** When combining affinities, all constraints must be satisfiable. Conflicting constraints (e.g., affinity requiring pod on node1, node affinity excluding node1) cause pending pods.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -486,6 +487,7 @@ Difference: 1 (satisfied)
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -620,41 +622,3 @@ kubectl get pods -l app=impossible
 
 ---
 
-## 📌 Quick Reference
-
-```bash
-# Pod affinity (co-location)
-affinity:
-  podAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-    - labelSelector: ...
-      topologyKey: kubernetes.io/hostname
-
-# Pod anti-affinity (spread)
-affinity:
-  podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-    - labelSelector: ...
-      topologyKey: kubernetes.io/hostname
-
-# Topology spread (even distribution)
-topologySpreadConstraints:
-- maxSkew: 1
-  topologyKey: topology.kubernetes.io/zone
-  whenUnsatisfiable: DoNotSchedule
-  labelSelector: ...
-
-# Common topology keys
-- kubernetes.io/hostname (node level)
-- topology.kubernetes.io/zone (zone level)
-- topology.kubernetes.io/region (region level)
-
-# Check pod scheduling
-kubectl get pods -o wide
-kubectl describe pod <pod-name>  # See affinity status
-```
-
-### Related Topics
-
-- 🔗 [Node Affinity](./node-affinity.md) — Node-based scheduling constraints
-- 🔗 [Taints and Tolerations](./taints-and-tolerations.md) — Node availability constraints

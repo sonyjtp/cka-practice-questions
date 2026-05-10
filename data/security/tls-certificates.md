@@ -103,6 +103,7 @@ kubeadm certs check-expiration
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -249,10 +250,6 @@ kubectl get nodes
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Manually Sign a Certificate Using the Cluster CA
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -300,6 +297,11 @@ kubectl --context=alice-context get pods
 > **Key Concept:** Manually signing with the CA key is equivalent to what the Certificates API does — the end result is the same. Direct CA signing requires access to `ca.key` (highly sensitive). The Certificates API is the safer, auditable alternative. In either case, the resulting cert must be distributed to the user along with `ca.crt` and a kubeconfig.
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 
@@ -364,60 +366,3 @@ Common TLS errors:
 
 ---
 
-## 📌 Quick Reference
-
-### Certificate Locations (kubeadm)
-
-```
-/etc/kubernetes/pki/
-├── ca.crt / ca.key                      Cluster CA
-├── apiserver.crt / .key                 API server (server cert)
-├── apiserver-kubelet-client.crt / .key  API server → kubelet (client cert)
-├── apiserver-etcd-client.crt / .key     API server → etcd (client cert)
-├── front-proxy-ca.crt / .key
-├── front-proxy-client.crt / .key
-└── etcd/
-    ├── ca.crt / ca.key                  etcd CA
-    ├── server.crt / .key
-    ├── peer.crt / .key
-    └── healthcheck-client.crt / .key
-```
-
-### Certificates API Workflow
-
-```
-1. openssl genrsa -out user.key 2048
-2. openssl req -new -key user.key -subj "/CN=<user>/O=<group>" -out user.csr
-3. Create CertificateSigningRequest object (base64-encoded CSR)
-4. kubectl certificate approve <csr-name>
-5. kubectl get csr <name> -o jsonpath='{.status.certificate}' | base64 -d > user.crt
-```
-
-### Useful openssl Commands
-
-```bash
-# Inspect a certificate
-openssl x509 -in <cert> -text -noout
-
-# Check expiry
-openssl x509 -in <cert> -noout -enddate
-
-# Check SANs
-openssl x509 -in <cert> -text -noout | grep -A 5 "Subject Alternative"
-
-# Verify cert against CA
-openssl verify -CAfile ca.crt <cert>
-
-# Check cert/key match (hashes must be equal)
-openssl x509 -noout -modulus -in <cert> | md5sum
-openssl rsa  -noout -modulus -in <key>  | md5sum
-
-# Sign a CSR manually
-openssl x509 -req -in <csr> -CA ca.crt -CAkey ca.key -CAcreateserial -out <cert> -days 365
-```
-
-### Related Topics
-
-- 🔗 [kubeconfig](./kubeconfig.md) — client certs are embedded in kubeconfig to authenticate users
-- 🔗 [RBAC](../cluster-architecture/rbac.md) — after cert auth, RBAC controls what the user can do
-- 🔗 [etcd Backup & Restore](../cluster-architecture/etcd-backup-restore.md) — etcd uses its own CA and certs

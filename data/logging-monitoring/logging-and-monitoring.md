@@ -54,6 +54,11 @@ kubectl logs multi-app -c backend --follow
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — View Logs of a Previously Crashed Container
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -73,10 +78,6 @@ kubectl logs crash-app --previous --tail=100
 > **Key Concept:** `--previous` (or `-p`) fetches the logs from the last terminated instance of a container. This is extremely useful for diagnosing crash-loops (CrashLoopBackOff) because the current container may have already restarted and its logs are empty.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -153,6 +154,7 @@ kubectl top nodes --sort-by=memory | head -2
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 
@@ -240,68 +242,3 @@ kubectl logs app-with-logs -c log-forwarder --follow
 
 ---
 
-## 📌 Quick Reference
-
-| Concept                              | Description                                              |
-|--------------------------------------|----------------------------------------------------------|
-| `kubectl logs <pod>`                 | Fetch stdout/stderr logs from a pod                      |
-| `--tail=N`                           | Show only the last N lines                               |
-| `--follow` / `-f`                    | Stream logs in real time                                 |
-| `--previous` / `-p`                  | Fetch logs from the previously crashed container         |
-| `-c <container>`                     | Select a specific container in a multi-container pod     |
-| `-l <selector>`                      | Fetch logs from all pods matching a label                |
-| `--prefix`                           | Prefix each log line with the pod name (use with `-l`)   |
-| `kubectl top nodes`                  | Show CPU/memory usage per node (requires Metrics Server) |
-| `kubectl top pods`                   | Show CPU/memory usage per pod (requires Metrics Server)  |
-| `--sort-by=cpu` / `--sort-by=memory` | Sort `kubectl top` output                                |
-
-### Useful Commands
-
-```bash
-# Logs — basic
-kubectl logs <pod> -n <namespace>
-
-# Logs — last N lines, streamed
-kubectl logs <pod> --tail=50 --follow
-
-# Logs — specific container
-kubectl logs <pod> -c <container>
-
-# Logs — previous crashed instance
-kubectl logs <pod> --previous
-
-# Logs — all pods matching a label, with pod-name prefix
-kubectl logs -l app=<label> --prefix --follow
-
-# Save logs to file
-kubectl logs <pod> --previous > /path/to/file.log
-
-# Resource usage — nodes
-kubectl top nodes
-kubectl top nodes --sort-by=memory
-kubectl top nodes --sort-by=cpu
-
-# Resource usage — pods
-kubectl top pods -n <namespace>
-kubectl top pods -n <namespace> --sort-by=cpu
-
-# Describe a pod to check exit codes and events
-kubectl describe pod <pod> -n <namespace>
-```
-
-### Exit Code Cheat Sheet
-
-```
-0    → Container exited successfully
-1    → Generic application error
-137  → OOMKilled — container exceeded its memory limit
-143  → Graceful shutdown via SIGTERM
-126  → Command found but not executable
-127  → Command not found
-```
-
-### Related Topics
-
-- 🔗 [DaemonSets](../scheduling/daemonsets.md) — commonly used to deploy log collectors (e.g., Fluentd, Filebeat) on every node
-- 🔗 [Resource Requests & Limits](../scheduling/resource-requests-limits-quotas.md) — memory limits directly cause OOMKill (exit code 137)
-- 🔗 [Static Pods](../scheduling/static-pods.md) — control plane component logs are accessible via `kubectl logs` on static pods

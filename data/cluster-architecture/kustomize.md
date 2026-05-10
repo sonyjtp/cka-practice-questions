@@ -67,6 +67,11 @@ When this kustomization is applied, a Deployment named `myapp` becomes `dev-myap
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Set Environment Variables with Kustomize
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -94,10 +99,6 @@ Then reference this ConfigMap in your Deployment via `envFrom: configMapRef`.
 **Key Concept:** `configMapGenerator` automatically generates a ConfigMap from literals or files, and kustomize manages naming to ensure rollouts when the config changes.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -236,6 +237,7 @@ Build with: `kustomize build overlays/prod/`
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 

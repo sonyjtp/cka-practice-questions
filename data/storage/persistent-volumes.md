@@ -106,6 +106,11 @@ Binding rules:
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Mount a PVC into a Pod
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -150,10 +155,6 @@ kubectl exec pvc-pod -- cat /data/output.txt
 > **Key Concept:** Pods reference PVCs by name under `spec.volumes[].persistentVolumeClaim.claimName`. The PVC must be in the **same namespace** as the Pod. The data written to the mounted path persists beyond the Pod's lifecycle — if the Pod is deleted and recreated with the same PVC, the data is still there.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -349,6 +350,7 @@ Common causes:
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -487,59 +489,3 @@ kubectl exec mysql-ss-0 -- df -h /var/lib/mysql
 
 ---
 
-## 📌 Quick Reference
-
-### PV Lifecycle
-
-```
-Created → Available → Bound → Released → (Retain: Available after manual reclaim)
-                                       → (Delete: PV and storage deleted)
-```
-
-### PV / PVC Binding Requirements
-
-```
-PVC storageClassName == PV storageClassName
-PVC accessModes ⊆ PV accessModes
-PVC storage request ≤ PV capacity
-PV STATUS == Available
-```
-
-### Access Modes
-
-| Mode               | Short | Meaning                         |
-|--------------------|-------|---------------------------------|
-| `ReadWriteOnce`    | RWO   | Single node, read-write         |
-| `ReadOnlyMany`     | ROX   | Multiple nodes, read-only       |
-| `ReadWriteMany`    | RWX   | Multiple nodes, read-write      |
-| `ReadWriteOncePod` | RWOP  | Single pod cluster-wide (1.22+) |
-
-### Useful Commands
-
-```bash
-# List PVs and PVCs
-kubectl get pv
-kubectl get pvc -A
-
-# Describe PV/PVC
-kubectl describe pv <name>
-kubectl describe pvc <name> -n <namespace>
-
-# Patch PV reclaim policy
-kubectl patch pv <name> --type merge \
-  -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
-
-# Remove claimRef (to make Released PV Available)
-kubectl patch pv <name> --type json \
-  -p '[{"op":"remove","path":"/spec/claimRef"}]'
-
-# Expand PVC
-kubectl patch pvc <name> --type merge \
-  -p '{"spec":{"resources":{"requests":{"storage":"2Gi"}}}}'
-```
-
-### Related Topics
-
-- 🔗 [Storage Classes](./storage-classes.md) — dynamic provisioning; StorageClass provisioners
-- 🔗 [Init Containers](../workloads/init-containers.md) — init containers often pre-populate PVC-mounted volumes
-- 🔗 [ConfigMaps](../workloads/configmaps.md) — ConfigMap volumes vs PVC volumes: ephemeral vs persistent

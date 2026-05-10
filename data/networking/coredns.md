@@ -113,6 +113,7 @@ kubectl exec dns-test -- cat /etc/resolv.conf
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -262,10 +263,6 @@ kubectl rollout status deployment coredns -n kube-system
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 5 — Troubleshoot DNS Resolution Failure
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -349,6 +346,11 @@ DNS troubleshooting checklist:
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 6 — Configure Pod-Level DNS Settings
 > ⏱️ **Recommended Time: 8 minutes**
 
@@ -421,64 +423,3 @@ kubectl exec custom-dns-pod -- nslookup google.com
 
 ---
 
-## 📌 Quick Reference
-
-### CoreDNS Key Commands
-
-```bash
-# CoreDNS status
-kubectl get deployment coredns -n kube-system
-kubectl get pods -n kube-system -l k8s-app=kube-dns
-kubectl get svc kube-dns -n kube-system
-
-# CoreDNS config
-kubectl get configmap coredns -n kube-system -o yaml
-kubectl edit configmap coredns -n kube-system
-
-# CoreDNS logs
-kubectl logs -n kube-system -l k8s-app=kube-dns
-kubectl logs -n kube-system <coredns-pod> --previous
-
-# Scale CoreDNS
-kubectl scale deployment coredns -n kube-system --replicas=4
-
-# Restart CoreDNS
-kubectl rollout restart deployment coredns -n kube-system
-```
-
-### DNS Testing from Pod
-
-```bash
-kubectl run dns-test --image=busybox:1.28 --restart=Never -- sleep 3600
-kubectl exec dns-test -- nslookup <service>
-kubectl exec dns-test -- nslookup <service>.<namespace>
-kubectl exec dns-test -- nslookup <service> <CoreDNS-IP>   # direct query
-kubectl exec dns-test -- cat /etc/resolv.conf
-```
-
-### DNS Name Formats
-
-```
-Service:             <svc>.<ns>.svc.cluster.local
-StatefulSet Pod:     <pod>.<svc>.<ns>.svc.cluster.local
-Pod by IP:           <ip-dashes>.<ns>.pod.cluster.local
-```
-
-### Corefile Structure
-
-```
-<zone>:<port> {
-    kubernetes cluster.local ...   # k8s DNS
-    forward . /etc/resolv.conf     # external DNS
-    cache 30                       # response cache TTL
-    health                         # :8080/health
-    ready                          # :8181/ready
-    prometheus :9153               # metrics
-}
-```
-
-### Related Topics
-
-- 🔗 [Service Networking](./service-networking.md) — DNS names for services
-- 🔗 [Pod Networking](./pod-networking.md) — resolv.conf injection
-- 🔗 [Cluster Networking](./cluster-networking.md) — kube-proxy and networking fundamentals

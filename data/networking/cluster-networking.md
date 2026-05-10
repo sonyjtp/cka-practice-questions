@@ -111,6 +111,7 @@ iptables -L INPUT | grep -E "6443|10250"
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -223,10 +224,6 @@ journalctl -u kubelet -n 50 | grep -i "network\|cni\|error"
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 5 — Understand and Configure kube-proxy Mode
 > ⏱️ **Recommended Time: 8 minutes**
 
@@ -297,6 +294,11 @@ ipvsadm -ln | head -20
 > **Key Concept:** Both kube-proxy modes implement Service VIPs (ClusterIPs) by intercepting traffic destined for Service IPs and rewriting it to actual pod IPs. **iptables** mode uses `DNAT` rules — works fine up to ~1000 services. **IPVS** mode uses kernel-level virtual server hashing — better performance and more load balancing algorithms. Most production clusters use IPVS or Cilium's eBPF (which replaces kube-proxy entirely).
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 
@@ -373,58 +375,3 @@ kubectl get nodes
 
 ---
 
-## 📌 Quick Reference
-
-### Required Ports
-
-```
-Control Plane:  6443 (API), 2379-2380 (etcd), 10250 (kubelet), 10259 (scheduler), 10257 (controller-manager)
-Worker Nodes:   10250 (kubelet), 10256 (kube-proxy), 30000-32767 (NodePort)
-```
-
-### Key Networking Commands
-
-```bash
-# Node IPs and status
-kubectl get nodes -o wide
-
-# Node network conditions
-kubectl describe node <name> | grep -A 10 Conditions
-
-# Routes on node
-ip route
-ip route get <pod-ip>        # which interface handles this IP
-
-# Open ports
-ss -tlnp
-nc -zv <host> <port>         # test port connectivity
-
-# kube-proxy mode
-kubectl get cm kube-proxy -n kube-system -o yaml | grep mode
-
-# IPVS rules
-ipvsadm -ln
-
-# iptables NAT rules (services)
-iptables -t nat -L KUBE-SERVICES
-```
-
-### Cluster Network CIDRs
-
-```bash
-# Pod CIDR (entire cluster)
-cat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep cluster-cidr
-
-# Service CIDR
-cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep service-cluster-ip-range
-
-# Per-node pod CIDR
-kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.podCIDR}{"\n"}{end}'
-```
-
-### Related Topics
-
-- 🔗 [Pod Networking](./pod-networking.md) — veth pairs, network namespaces
-- 🔗 [CNI](./cni.md) — CNI plugins and IPAM
-- 🔗 [Service Networking](./service-networking.md) — kube-proxy and ClusterIP
-- 🔗 [CoreDNS](./coredns.md) — DNS for pod and service discovery

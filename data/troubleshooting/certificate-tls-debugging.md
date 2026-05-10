@@ -89,6 +89,11 @@ openssl rsa -noout -modulus -in /etc/kubernetes/pki/apiserver.key | openssl md5
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Renew Kubelet Client Certificate
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -123,10 +128,6 @@ systemctl restart kubelet
 **Key Concept:** Kubelet automatically rotates certificates. If rotation fails, check pending CSRs and manually approve them with `kubectl certificate approve`.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -253,10 +254,6 @@ kubectl get nodes -o wide
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Recreate Cluster Certificates
 > ⏱️ **Recommended Time: 15 minutes**
 
@@ -331,6 +328,11 @@ openssl verify -CAfile /etc/kubernetes/pki/ca.crt /etc/kubernetes/pki/apiserver.
 **Key Concept:** Certificate renewal requires restarting kubelet to pick up new certs. Always backup before regenerating, and verify cluster health after the process.
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 

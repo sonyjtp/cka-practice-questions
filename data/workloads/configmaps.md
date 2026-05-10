@@ -97,6 +97,11 @@ kubectl create configmap app-properties \
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Inject All ConfigMap Keys as Environment Variables
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -135,10 +140,6 @@ kubectl exec app-pod -- env | grep -E "APP_ENV|APP_PORT|LOG_LEVEL"
 > **Key Concept:** `envFrom.configMapRef` loads **all** keys from a ConfigMap as environment variables in one shot. The key names become the environment variable names directly. If a key name is not a valid env var name (e.g., contains dots like `database.url`), the pod will still start but that key will be skipped — use volume mounts for such keys instead.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -270,6 +271,7 @@ kubectl exec nginx-pod -- cat /etc/nginx/nginx.conf
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -383,68 +385,3 @@ kubectl delete configmap release-config -n production
 
 ---
 
-## 📌 Quick Reference
-
-### Creation Methods
-
-| Method | Command | Key Name |
-|--------|---------|----------|
-| From literal | `--from-literal=KEY=VALUE` | As specified |
-| From file | `--from-file=/path/to/file` | Filename |
-| From file (custom key) | `--from-file=mykey=/path/to/file` | `mykey` |
-| From env file | `--from-env-file=/path/to/.env` | Each line's key |
-
-### Injection Methods
-
-| Method | Field | Loads | Auto-updates? |
-|--------|-------|-------|---------------|
-| `envFrom.configMapRef` | All keys | As env vars | ❌ No |
-| `env.valueFrom.configMapKeyRef` | Single key | As named env var | ❌ No |
-| Volume mount (no items) | All keys | As files | ✅ Yes (~1 min) |
-| Volume mount (with items) | Selected keys | As named files | ✅ Yes |
-| Volume mount (with subPath) | Single key | As single file | ❌ No |
-
-### Useful Commands
-
-```bash
-# Create from literals
-kubectl create configmap <name> --from-literal=KEY=VALUE
-
-# Create from file
-kubectl create configmap <name> --from-file=/path/to/file
-
-# Create from env file
-kubectl create configmap <name> --from-env-file=/path/to/.env
-
-# View ConfigMap
-kubectl get configmap <name> -o yaml
-
-# Edit ConfigMap (triggers live update for volume mounts)
-kubectl edit configmap <name>
-
-# Patch a specific key
-kubectl patch configmap <name> \
-  --type merge \
-  -p '{"data":{"KEY":"newvalue"}}'
-
-# Delete a ConfigMap
-kubectl delete configmap <name>
-```
-
-### ConfigMaps vs Secrets
-
-```
-ConfigMap  →  Plain text, non-sensitive config (ports, URLs, flags, config files)
-Secret     →  Base64-encoded, sensitive data (passwords, tokens, certs)
-
-Key differences:
-  - ConfigMap data is stored as plain text in etcd
-  - Secret data is base64-encoded (NOT encrypted by default)
-  - Secrets have additional types (tls, docker-registry, etc.)
-  - Both support immutability, envFrom, valueFrom, and volume mounts
-```
-
-### Related Topics
-
-- 🔗 [Secrets](./secrets.md) — same injection patterns; used for sensitive data
-- 🔗 [Encrypting Secrets at Rest](../cluster-architecture/encrypting-secrets-at-rest.md) — add real encryption to Secret storage in etcd

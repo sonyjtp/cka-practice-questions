@@ -110,6 +110,7 @@ kubectl describe storageclass gp2
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -234,10 +235,6 @@ kubectl exec csi-pod -- df -h /data
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 5 — Resize a CSI-backed PVC
 > ⏱️ **Recommended Time: 8 minutes**
 
@@ -297,6 +294,11 @@ kubectl exec csi-pod -- df -h /data
 > **Key Concept:** PVC expansion happens in two stages: (1) the CSI driver expands the **block device/volume** in the storage backend, then (2) the **filesystem** inside the volume is expanded. Most modern CSI drivers support online filesystem resize (no Pod restart needed). The `FileSystemResizePending` condition means the block device was resized but the filesystem hasn't been expanded yet — this clears once the Pod mounts the volume again.
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 
@@ -365,58 +367,3 @@ Common CSI failure causes and fixes:
 
 ---
 
-## 📌 Quick Reference
-
-### CSI Key Objects
-
-```bash
-# CSI Driver registration
-kubectl get csidrivers
-
-# CSI per-node driver info
-kubectl get csinodes
-
-# StorageClasses using CSI
-kubectl get storageclass
-```
-
-### CSI StorageClass Template
-
-```yaml
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: my-csi-sc
-provisioner: <csi-driver-name>          # e.g. ebs.csi.aws.com, pd.csi.storage.gke.io
-reclaimPolicy: Delete                   # Delete | Retain
-volumeBindingMode: WaitForFirstConsumer # Immediate | WaitForFirstConsumer
-allowVolumeExpansion: true
-parameters:
-  type: gp3                             # driver-specific
-  fsType: ext4
-```
-
-### CSI Driver Components
-
-| Component             | Type       | Responsibility                                         |
-|-----------------------|------------|--------------------------------------------------------|
-| CSI Controller Plugin | Deployment | Create, delete, attach, snapshot volumes               |
-| CSI Node Plugin       | DaemonSet  | Mount/unmount volumes on nodes                         |
-| External Provisioner  | Sidecar    | Watches PVCs, calls CSI CreateVolume                   |
-| External Attacher     | Sidecar    | Watches VolumeAttachments, calls CSI ControllerPublish |
-
-### Common CSI Provisioner Names
-
-| Cloud / Storage      | Provisioner Name        |
-|----------------------|-------------------------|
-| AWS EBS              | `ebs.csi.aws.com`       |
-| GCE Persistent Disk  | `pd.csi.storage.gke.io` |
-| Azure Disk           | `disk.csi.azure.com`    |
-| Azure File           | `file.csi.azure.com`    |
-| NFS                  | `nfs.csi.k8s.io`        |
-| Local path (Rancher) | `rancher.io/local-path` |
-
-### Related Topics
-
-- 🔗 [Persistent Volumes](./persistent-volumes.md) — PV/PVC concepts that CSI plugs into
-- 🔗 [Storage Classes](./storage-classes.md) — StorageClass configuration and dynamic provisioning

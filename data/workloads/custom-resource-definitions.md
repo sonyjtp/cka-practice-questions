@@ -42,6 +42,11 @@ issuers.cert-manager.io       2024-01-15T10:30:45Z
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 2 — Create a Custom Resource Instance
 > ⏱️ **Recommended Time: 4 minutes**
 
@@ -86,10 +91,6 @@ prod-db   2m
 > **Key Concept:** Once a CRD is registered, you can create instances of that custom resource type just like built-in Kubernetes resources. The `apiVersion` and `kind` must match the CRD definition.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -175,6 +176,7 @@ spec:
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 

@@ -90,6 +90,11 @@ kubectl get pod kube-apiserver-controlplane -n kube-system -o yaml | grep PodNod
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Disable an Admission Controller Plugin
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -126,10 +131,6 @@ kubectl get pod kube-apiserver-controlplane -n kube-system -o yaml | grep -i adm
 > **Key Concept:** Use `--disable-admission-plugins` to turn off a plugin that is enabled by default. You can use both `--enable-admission-plugins` and `--disable-admission-plugins` flags simultaneously on the same `kube-apiserver`.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -251,9 +252,9 @@ cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep admission
 
 **Admission vs RBAC errors:**
 
-| Error Source | Message Pattern |
-|---|---|
-| RBAC | `User "X" cannot create resource "Y" in namespace "Z"` |
+| Error Source         | Message Pattern                                                                  |
+|----------------------|----------------------------------------------------------------------------------|
+| RBAC                 | `User "X" cannot create resource "Y" in namespace "Z"`                           |
 | Admission Controller | `pods "X" is forbidden: exceeded quota / namespace terminating / limit exceeded` |
 
 > **Key Concept:** RBAC errors say the user **cannot** perform an action. Admission controller errors say the request is **forbidden** for policy reasons even though the user has permission. Always read the full error message — it usually names the quota, limitrange, or policy responsible.
@@ -261,6 +262,7 @@ cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep admission
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 
@@ -364,70 +366,3 @@ kubectl cluster-info
 
 ---
 
-## 📌 Quick Reference
-
-| Admission Controller         | Purpose                                                                        |
-|------------------------------|--------------------------------------------------------------------------------|
-| `NamespaceLifecycle`         | Blocks resource creation in terminating namespaces; protects system namespaces |
-| `LimitRanger`                | Enforces `LimitRange` defaults and min/max constraints                         |
-| `ResourceQuota`              | Enforces `ResourceQuota` limits on namespace resource consumption              |
-| `NodeRestriction`            | Limits what kubelets can modify on nodes and pods                              |
-| `DefaultStorageClass`        | Assigns a default `StorageClass` to PVCs that don't request one                |
-| `PriorityClass`              | Ensures `priorityClassName` references a valid `PriorityClass`                 |
-| `MutatingAdmissionWebhook`   | Calls external webhooks that can modify objects                                |
-| `ValidatingAdmissionWebhook` | Calls external webhooks that can approve or reject objects                     |
-
-### Admission Controller Request Flow
-
-```
-kubectl apply
-    │
-    ▼
-Authentication → Authorisation (RBAC)
-    │
-    ▼
-Mutating Admission Webhooks   ← modifies the object
-    │
-    ▼
-Schema Validation
-    │
-    ▼
-Validating Admission Webhooks ← approves or rejects
-    │
-    ▼
-Persisted to etcd ✅
-```
-
-### Useful Commands
-
-```bash
-# View kube-apiserver admission flags
-cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep -i admission
-
-# List ValidatingWebhookConfigurations
-kubectl get validatingwebhookconfigurations
-
-# List MutatingWebhookConfigurations
-kubectl get mutatingwebhookconfigurations
-
-# Check ResourceQuota usage (admission enforcement)
-kubectl describe resourcequota -n <namespace>
-
-# Check LimitRange (admission enforcement)
-kubectl describe limitrange -n <namespace>
-
-# Recover API server when kubectl is unavailable
-sudo crictl ps -a | grep kube-apiserver
-sudo crictl logs <container-id>
-journalctl -u kubelet | tail -30
-```
-
-### RBAC vs Admission Controller Errors
-
-```
-"User X cannot create Y in namespace Z"     →  RBAC rejection
-"pods X is forbidden: exceeded quota"       →  ResourceQuota admission controller
-"maximum cpu/memory usage per Container"    →  LimitRanger admission controller
-"unable to create content in terminating"   →  NamespaceLifecycle admission controller
-"webhook rejected: ..."                     →  ValidatingAdmissionWebhook
-```

@@ -141,6 +141,11 @@ systemctl show kubelet | grep ExecStart
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Check node resource reservation
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -212,10 +217,6 @@ Allocatable (for pod scheduling)
 > **Key Concept:** Node resources are divided into reserved (for system/kubelet), hard eviction threshold (safety margin), and allocatable (for pods). Understanding this prevents pod scheduling in situations where the node actually lacks capacity.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -390,6 +391,7 @@ evictionSoftGracePeriod:
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -511,40 +513,3 @@ kubectl drain node1 \
 
 ---
 
-## 📌 Quick Reference
-
-```bash
-# View kubelet config
-cat /var/lib/kubelet/config.yaml
-
-# View kubelet flags
-ps aux | grep kubelet
-
-# Check node capacity
-kubectl describe node <node-name>
-kubectl get node <node-name> -o yaml | grep -E "capacity:|allocatable:"
-
-# View node conditions
-kubectl get node <node-name> -o yaml | grep -A 10 "conditions:"
-
-# Check evictions
-journalctl -u kubelet | grep evict
-
-# Drain node for maintenance
-kubectl drain <node-name> --ignore-daemonsets --delete-emptydir-data
-
-# Cordon node (no new pods)
-kubectl cordon <node-name>
-
-# Uncordon node (allow scheduling)
-kubectl uncordon <node-name>
-
-# Restart kubelet on node
-ssh <node-name>
-sudo systemctl restart kubelet
-```
-
-### Related Topics
-
-- 🔗 [Cluster Architecture](./kubeadm-cluster-upgrade.md) — Node provisioning
-- 🔗 [Resource Management](../scheduling/resource-requests-limits-quotas.md) — Resource requests and limits

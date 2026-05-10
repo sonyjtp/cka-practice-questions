@@ -89,6 +89,7 @@ kubectl describe storageclass fast-storage
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -252,10 +253,6 @@ kubectl patch pv <pv-name> \
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Troubleshoot PVC Pending Due to StorageClass Issues
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -339,6 +336,11 @@ PVC Pending
 > **Key Concept:** Always start with `kubectl describe pvc` — the Events section gives the exact reason. The two most common causes are: (1) the StorageClass doesn't exist (typo in the name), and (2) no matching PV exists for a `no-provisioner` StorageClass. With `WaitForFirstConsumer`, the PVC stays `Pending` until a pod requests it — this is **normal** and not an error.
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 
@@ -447,66 +449,3 @@ Binding mode comparison:
 
 ---
 
-## 📌 Quick Reference
-
-### StorageClass Fields
-
-```yaml
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: example
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "true"  # make default
-provisioner: <provisioner-name>       # who creates the PV
-reclaimPolicy: Delete                 # Delete | Retain
-volumeBindingMode: Immediate          # Immediate | WaitForFirstConsumer
-allowVolumeExpansion: true            # allow PVC resize
-parameters: {}                        # provisioner-specific settings
-```
-
-### Common Provisioners
-
-| Provisioner | Platform |
-|-------------|---------|
-| `kubernetes.io/no-provisioner` | Static/manual (any) |
-| `kubernetes.io/aws-ebs` | AWS (in-tree, deprecated) |
-| `ebs.csi.aws.com` | AWS (CSI) |
-| `pd.csi.storage.gke.io` | GKE (CSI) |
-| `disk.csi.azure.com` | AKS (CSI) |
-| `k8s.io/minikube-hostpath` | Minikube |
-| `rancher.io/local-path` | Rancher/k3s |
-
-### Volume Binding Mode Decision
-
-```
-Multi-zone cluster or local storage?
-  YES → WaitForFirstConsumer
-  NO  → Immediate (simpler, fine for single-zone)
-```
-
-### Useful Commands
-
-```bash
-# List StorageClasses
-kubectl get sc
-
-# Describe a StorageClass
-kubectl describe sc <name>
-
-# Set as default
-kubectl patch sc <name> --type merge \
-  -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-
-# Remove default
-kubectl patch sc <name> --type merge \
-  -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
-
-# Check which SC a PVC uses
-kubectl get pvc <name> -o jsonpath='{.spec.storageClassName}'
-```
-
-### Related Topics
-
-- 🔗 [Persistent Volumes](./persistent-volumes.md) — PV/PVC lifecycle, reclaim policies, static provisioning
-- 🔗 [StatefulSets](../workloads/deployment-strategies.md) — `volumeClaimTemplates` use StorageClasses for per-pod PVCs

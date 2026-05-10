@@ -70,6 +70,11 @@ helm search hub nginx
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Install a Helm Chart
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -134,10 +139,6 @@ helm get all my-nginx -n web        # everything combined
 > **Key Concept:** `helm get` is the primary inspection tool for deployed releases. `helm get values` shows only values that differ from defaults unless `--all` is used. `helm get manifest` shows exactly what Kubernetes manifests were applied — useful for debugging resource configuration.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -211,6 +212,11 @@ REVISION  STATUS      DESCRIPTION
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 7 — Install a Chart with a Custom Values File
 > ⏱️ **Recommended Time: 7 minutes**
 
@@ -256,9 +262,6 @@ kubectl get service -n staging
 
 ---
 
-## 🔴 Hard Questions
-
----
 
 ### Question 8 — Uninstall a Release and Manage History
 > ⏱️ **Recommended Time: 8 minutes**

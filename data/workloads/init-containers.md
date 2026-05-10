@@ -95,6 +95,7 @@ kubectl logs app-pod -c init-setup --previous
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -268,10 +269,6 @@ kubectl apply -f fixed-init-pod.yaml
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Init Container Populating Config for a Sidecar Pattern
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -341,6 +338,11 @@ kubectl logs config-pod -c log-watcher
 > **Key Concept:** Init containers and regular containers can all share the same `emptyDir` volume. The init container runs first and sets up the shared state, which is then available to all main containers simultaneously when they start. This pattern is commonly used for: generating dynamic configs, fetching secrets from vaults, or compiling assets before the app server starts.
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 
@@ -421,64 +423,3 @@ Behaviour differences vs traditional init containers:
 
 ---
 
-## 📌 Quick Reference
-
-### Init Container Lifecycle
-
-```
-Pod scheduled
-    ↓
-Init container 1 runs → must exit 0
-    ↓
-Init container 2 runs → must exit 0
-    ↓
-  ... (sequential)
-    ↓
-All main containers start simultaneously
-```
-
-### Pod Init Status Reference
-
-| Status | Meaning |
-|--------|---------|
-| `Init:0/2` | 0 of 2 init containers completed |
-| `Init:1/2` | 1 of 2 init containers completed |
-| `Init:CrashLoopBackOff` | An init container is repeatedly failing |
-| `Init:Error` | An init container exited with a non-zero code |
-| `PodInitializing` | All init containers done, main containers starting |
-| `Running` | All init containers done, main containers running |
-
-### Init vs Sidecar vs Main Container
-
-```
-Init container   → Runs before main; exits when done; sequential
-Sidecar          → Runs alongside main; helper/observer pattern
-Main container   → Primary application workload
-```
-
-### Useful Commands
-
-```bash
-# View init container status
-kubectl get pod <name>
-kubectl describe pod <name> | grep -A 20 "Init Containers"
-
-# Logs from an init container
-kubectl logs <pod> -c <init-container-name>
-
-# Logs from previous failed init container
-kubectl logs <pod> -c <init-container-name> --previous
-
-# Watch pod progress through init phases
-kubectl get pod <name> --watch
-
-# Delete and recreate pod (required to change init container spec)
-kubectl delete pod <name>
-kubectl apply -f <manifest>
-```
-
-### Related Topics
-
-- 🔗 [Multi-Container Pods](./multi-container-pods.md) — sidecar, ambassador, and adapter patterns for regular containers
-- 🔗 [ConfigMaps](./configmaps.md) — alternative to init containers for injecting static config
-- 🔗 [Secrets](./secrets.md) — init containers can fetch secrets and write them to shared volumes

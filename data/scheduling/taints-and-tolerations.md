@@ -72,6 +72,11 @@ Taints: <none>
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Adding a Toleration to a Pod
 > ⏱️ **Recommended Time: 6 minutes**
 
@@ -108,10 +113,6 @@ kubectl describe pod gpu-pod | grep -A 5 Tolerations
 > **Key Concept:** A toleration allows (but does not require) a pod to be scheduled on a node with a matching taint. The `operator: Equal` means the key and value must both match.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -255,6 +256,7 @@ kubectl get pod stuck-pod -o wide
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 
@@ -414,50 +416,3 @@ kubectl delete pod test-nginx
 
 ---
 
-## 📌 Quick Reference
-
-| Concept | Description |
-|---------|-------------|
-| `NoSchedule` | New pods without a matching toleration will not be scheduled on the node. Existing pods are not affected. |
-| `PreferNoSchedule` | The scheduler tries to avoid placing pods without a toleration, but it is not guaranteed. |
-| `NoExecute` | New pods without a toleration are not scheduled, **and** existing pods without a toleration are evicted. |
-| `operator: Equal` | Toleration matches a taint with the same key, value, and effect. |
-| `operator: Exists` | Toleration matches any taint with the given key regardless of value (omit `value` field). |
-| `tolerationSeconds` | Used with `NoExecute` — how long a pod can stay on a tainted node before eviction. |
-
-### Useful Commands
-
-```bash
-# Add a taint to a node
-kubectl taint node <node-name> key=value:Effect
-
-# Remove a taint from a node
-kubectl taint node <node-name> key=value:Effect-
-
-# View taints on all nodes
-kubectl describe nodes | grep -E "Name:|Taints:"
-
-# View taints with custom columns
-kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
-
-# View tolerations on a pod
-kubectl describe pod <pod-name> | grep -A 10 Tolerations
-
-# Check why a pod is Pending (taint-related events)
-kubectl describe pod <pod-name> | grep -A 10 Events
-
-# View the control-plane node taint (built-in)
-kubectl describe node <control-plane-node> | grep Taint
-```
-
-### Taint Effects — Cheat Sheet
-
-```
-NoSchedule     →  Blocks new pods (existing pods unaffected)
-PreferNoSchedule → Soft block for new pods
-NoExecute      →  Blocks new pods + evicts existing pods
-```
-
-### Related Topics
-
-- 🔗 [Node Affinity](./node-affinity.md) — use alongside taints/tolerations to both repel unwanted pods and attract the right ones; see **Question 7** for a combined example

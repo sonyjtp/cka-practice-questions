@@ -93,6 +93,11 @@ kubectl describe hpa web-app | grep -A 10 Events
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Manually Scale a Deployment
 > ⏱️ **Recommended Time: 4 minutes**
 
@@ -115,10 +120,6 @@ kubectl get pods -n production -l app=api-server --watch
 > **Key Concept:** `kubectl scale` directly sets the `spec.replicas` field. If an HPA is also attached to the same Deployment, it will **override the manual scale** the next time it reconciles — the HPA always wins. To permanently fix replica count, either delete the HPA or set both `--min` and `--max` to the desired value.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -231,6 +232,7 @@ kubectl get pods -l app=web-app
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -340,12 +342,12 @@ kubectl get hpa backend-hpa --watch
 
 Root causes summary:
 
-| Symptom | Root Cause | Fix |
-|---------|-----------|-----|
-| `<unknown>/60%` | Metrics Server not installed | Install Metrics Server |
-| `<unknown>/60%` | Pod has no CPU `requests` | Add resource requests to the pod spec |
-| `ScalingActive: False` | Target Deployment not found | Check `scaleTargetRef` name/namespace |
-| Replicas stuck at min | CPU below threshold | Expected behaviour — generate load to test |
+| Symptom                | Root Cause                   | Fix                                        |
+|------------------------|------------------------------|--------------------------------------------|
+| `<unknown>/60%`        | Metrics Server not installed | Install Metrics Server                     |
+| `<unknown>/60%`        | Pod has no CPU `requests`    | Add resource requests to the pod spec      |
+| `ScalingActive: False` | Target Deployment not found  | Check `scaleTargetRef` name/namespace      |
+| Replicas stuck at min  | CPU below threshold          | Expected behaviour — generate load to test |
 
 > **Key Concept:** The two most common HPA failure modes in the CKA exam are: (1) **Metrics Server not installed** — `kubectl top` also fails in this case, and (2) **missing resource requests on the target pods** — HPA calculates utilisation as `actual usage / requested`, so without a request value the percentage is undefined.
 
@@ -353,74 +355,3 @@ Root causes summary:
 
 ---
 
-## 📌 Quick Reference
-
-### HPA vs Manual Scaling
-
-| | Manual (`kubectl scale`) | HPA |
-|--|--------------------------|-----|
-| Trigger | Human action | CPU/memory metric threshold |
-| Speed | Immediate | ~15s sync loop |
-| Scale-down | Immediate | 5-min cooldown (default) |
-| Conflict | HPA overrides manual scale | HPA always wins |
-| Use case | One-off adjustments, testing | Production workloads |
-
-### HPA Requirements
-
-```
-1. Metrics Server must be installed and running in kube-system
-2. Target pods must have CPU resource requests defined
-3. scaleTargetRef must match an existing Deployment/ReplicaSet/StatefulSet
-```
-
-### Useful Commands
-
-```bash
-# Create HPA imperatively
-kubectl autoscale deployment <name> --min=<N> --max=<N> --cpu-percent=<N>
-
-# List HPAs
-kubectl get hpa -A
-
-# Describe HPA (shows conditions and events)
-kubectl describe hpa <name>
-
-# Watch HPA live
-kubectl get hpa <name> --watch
-
-# Delete HPA (Deployment is unaffected)
-kubectl delete hpa <name>
-
-# Manual scale
-kubectl scale deployment <name> --replicas=<N>
-
-# Check metrics (requires Metrics Server)
-kubectl top pods
-kubectl top nodes
-```
-
-### HPA Behavior Defaults
-
-```
-Scale-up   stabilizationWindowSeconds: 0    (immediate)
-Scale-down stabilizationWindowSeconds: 300  (5 minutes)
-```
-
-### autoscaling/v2 Metrics Types
-
-| Type | Description |
-|------|-------------|
-| `Resource` | CPU or memory of pods (most common in CKA) |
-| `Pods` | Custom per-pod metric (e.g., requests/sec) |
-| `Object` | Metric from a specific Kubernetes object |
-| `External` | Metric from outside the cluster (e.g., queue depth) |
-
-### ⚠️ VPA — Not a CKA Topic
-
-VPA (Vertical Pod Autoscaler) adjusts CPU/memory **requests** on individual pods rather than scaling the replica count. It is **not tested on the CKA** exam. It is part of the Kubernetes Autoscaler project and requires a separate installation.
-
-### Related Topics
-
-- 🔗 [Deployment Strategies](./deployment-strategies.md) — manual scaling covered in Q6; HPA overrides `spec.replicas`
-- 🔗 [Resource Requests & Limits](../scheduling/resource-requests-limits-quotas.md) — CPU requests are required for HPA to calculate utilisation
-- 🔗 [Logging & Monitoring](../logging-monitoring/logging-and-monitoring.md) — `kubectl top` uses the same Metrics Server as HPA

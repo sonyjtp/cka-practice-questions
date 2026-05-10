@@ -150,6 +150,11 @@ BackOff - Restarting pod after failure
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Understand API server audit logs
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -235,10 +240,6 @@ grep "\"name\":\"my-pod\"" /var/log/audit/audit.log | grep "delete" | jq '.user'
 > **Key Concept:** API audit logs record all API requests to the server. Useful for security investigation, compliance, and understanding who did what. Configuration via audit-policy.yaml.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -413,6 +414,7 @@ grep "\"resource\":\"pods\"" /var/log/audit/audit.log | \
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -511,37 +513,3 @@ Pod not appearing?
 
 ---
 
-## 📌 Quick Reference
-
-```bash
-# Kubelet logs
-ssh <node>
-journalctl -u kubelet -n 50      # Last 50 lines
-journalctl -u kubelet -f         # Follow in real-time
-journalctl -u kubelet -p err     # Errors only
-
-# Events
-kubectl get events               # All events
-kubectl get events -w            # Watch events
-kubectl describe pod <pod>       # Events for specific pod
-kubectl get events --field-selector reason=FailedScheduling
-
-# Node status
-kubectl describe node <node>
-kubectl get node <node> -o yaml
-
-# API audit logs (on control plane)
-ssh control-plane
-tail -f /var/log/audit/audit.log | jq '.'
-grep "\"verb\":\"delete\"" /var/log/audit/audit.log | jq '.objectRef'
-
-# System logs (on node)
-ssh <node>
-dmesg | tail -50
-systemctl status kubelet
-```
-
-### Related Topics
-
-- 🔗 [Application Logging](./application-logging.md) — Pod and container logs
-- 🔗 [Troubleshooting](../cluster-architecture/troubleshooting.md) — General debugging approaches

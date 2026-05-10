@@ -85,6 +85,11 @@ kubectl get daemonset node-exporter -n monitoring -o yaml | grep -A 5 updateStra
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — DaemonSet with Resource Limits
 > ⏱️ **Recommended Time: 6 minutes**
 
@@ -133,10 +138,6 @@ kubectl describe daemonset resource-ds | grep -A 8 Limits
 > **Key Concept:** Resource requests and limits on DaemonSet pods work exactly like regular pods. Since a DaemonSet pod runs on every node, it is important to keep resource requests low to avoid starving other workloads.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -271,6 +272,7 @@ kubectl rollout undo daemonset monitoring-agent
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -381,54 +383,3 @@ kubectl get daemonset control-plane-agent -n kube-system
 
 ---
 
-## 📌 Quick Reference
-
-| Concept | Description |
-|---------|-------------|
-| DaemonSet | Ensures one pod runs on every (or a subset of) node(s) |
-| `nodeSelector` | Restricts the DaemonSet to nodes with matching labels |
-| `nodeAffinity` | More expressive node targeting using operators (`In`, `NotIn`, etc.) |
-| `tolerations` | Allows the DaemonSet to run on tainted nodes |
-| `RollingUpdate` | Default update strategy — updates one node at a time |
-| `OnDelete` | Pods are only updated when manually deleted |
-
-### Useful Commands
-
-```bash
-# Create a DaemonSet
-kubectl apply -f daemonset.yaml
-
-# List DaemonSets
-kubectl get daemonsets -A
-
-# Describe a DaemonSet
-kubectl describe daemonset <name> -n <namespace>
-
-# Update image
-kubectl set image daemonset/<name> <container>=<image>
-
-# Watch rollout
-kubectl rollout status daemonset/<name>
-
-# Rollback
-kubectl rollout undo daemonset/<name>
-
-# Rollout history
-kubectl rollout history daemonset/<name>
-
-# Verify pod distribution across nodes
-kubectl get pods -l <label> -o wide
-```
-
-### DaemonSet vs Deployment — Cheat Sheet
-
-```
-DaemonSet   →  One pod per node; no replica count; used for node-level agents
-Deployment  →  Specified replica count; scheduler places pods freely across nodes
-```
-
-### Related Topics
-
-- 🔗 [Static Pods](./static-pods.md) — kubelet-managed alternative for running pods on specific nodes without the API server
-- 🔗 [Node Affinity](./node-affinity.md) — advanced node targeting used in DaemonSet pod templates
-- 🔗 [Taints and Tolerations](./taints-and-tolerations.md) — required when running DaemonSets on tainted nodes

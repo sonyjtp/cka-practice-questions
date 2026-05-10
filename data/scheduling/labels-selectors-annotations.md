@@ -79,6 +79,7 @@ kubectl get pods -l env=production,app=web
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -158,10 +159,6 @@ kubectl describe pod annotated-pod | grep -A 5 Annotations
 > **Key Concept:** Annotations are non-identifying metadata. Unlike labels, they cannot be used in selectors but can store arbitrary information such as tool data, build info, or contact details.
 
 </details>
-
----
-
-## 🔴 Hard Questions
 
 ---
 
@@ -292,6 +289,11 @@ kubectl get pods ssd-pod ssd-pod-2 -o wide
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 7 — Labels, Selectors and Services
 > ⏱️ **Recommended Time: 10 minutes**
 
@@ -367,48 +369,3 @@ kubectl describe svc canary-svc
 
 ---
 
-## 📌 Quick Reference
-
-| Concept | Purpose |
-|---------|---------|
-| `metadata.labels` | Key/value pairs for identifying and selecting objects |
-| `metadata.annotations` | Key/value pairs for non-identifying metadata (not queryable) |
-| `spec.selector.matchLabels` | Equality-based selector used by Deployments, Services, etc. |
-| `spec.selector.matchExpressions` | Set-based selectors using `In`, `NotIn`, `Exists`, `DoesNotExist` |
-| `spec.nodeSelector` | Schedule pods only on nodes with matching labels |
-| `spec.affinity.nodeAffinity` | Advanced node scheduling rules (required or preferred) |
-
-### Useful Commands
-
-```bash
-# Show labels for all pods
-kubectl get pods --show-labels
-
-# Filter by label
-kubectl get pods -l app=web
-kubectl get pods -l 'env in (production, staging)'
-kubectl get pods -l 'env notin (debug)'
-kubectl get pods -l 'version'          # Exists
-kubectl get pods -l '!version'         # DoesNotExist
-
-# Add a label
-kubectl label pod <pod-name> key=value
-
-# Update a label
-kubectl label pod <pod-name> key=new-value --overwrite
-
-# Remove a label
-kubectl label pod <pod-name> key-
-
-# Add an annotation
-kubectl annotate pod <pod-name> key=value
-
-# Update an annotation
-kubectl annotate pod <pod-name> key=new-value --overwrite
-
-# Remove an annotation
-kubectl annotate pod <pod-name> key-
-
-# Label a node
-kubectl label node <node-name> key=value
-```

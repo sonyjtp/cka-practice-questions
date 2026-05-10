@@ -136,6 +136,11 @@ kubectl auth can-i list nodes --as=bob -n kube-system
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Create a ServiceAccount and Bind a Role
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -180,10 +185,6 @@ kubectl auth can-i delete configmaps \
 > **Key Concept:** When binding a role to a ServiceAccount, the subject format is `system:serviceaccount:<namespace>:<name>`. In `kubectl auth can-i`, use `--as=system:serviceaccount:<namespace>:<sa-name>` to test ServiceAccount permissions. ServiceAccounts are namespaced resources and are used by pods to authenticate to the API server.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -337,6 +338,7 @@ kubectl describe role configmap-reader -n dev
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 
@@ -543,78 +545,3 @@ kubectl auth can-i list configmaps \
 
 ---
 
-## 📌 Quick Reference
-
-### Role vs ClusterRole vs Bindings
-
-| Resource             | Scope     | Use For                                          |
-|----------------------|-----------|--------------------------------------------------|
-| `Role`               | Namespace | Permissions within one namespace                 |
-| `ClusterRole`        | Cluster   | Cluster-scoped resources + cross-namespace reuse |
-| `RoleBinding`        | Namespace | Grants Role or ClusterRole within one namespace  |
-| `ClusterRoleBinding` | Cluster   | Grants ClusterRole across all namespaces         |
-
-### Subject Types
-
-```yaml
-subjects:
-- kind: User
-  name: alice
-  apiGroup: rbac.authorization.k8s.io
-
-- kind: Group
-  name: dev-team
-  apiGroup: rbac.authorization.k8s.io
-
-- kind: ServiceAccount
-  name: my-sa
-  namespace: default   # required for ServiceAccount
-```
-
-### Common Verbs
-
-| Verb               | HTTP   | Description            |
-|--------------------|--------|------------------------|
-| `get`              | GET    | Read a single resource |
-| `list`             | GET    | List all resources     |
-| `watch`            | GET    | Stream changes         |
-| `create`           | POST   | Create a resource      |
-| `update`           | PUT    | Replace a resource     |
-| `patch`            | PATCH  | Partially update       |
-| `delete`           | DELETE | Delete a resource      |
-| `deletecollection` | DELETE | Delete multiple        |
-
-### Useful Commands
-
-```bash
-# Create Role imperatively
-kubectl create role <name> --verb=<verbs> --resource=<resources> -n <ns>
-
-# Create ClusterRole imperatively
-kubectl create clusterrole <name> --verb=<verbs> --resource=<resources>
-
-# Create RoleBinding (to Role)
-kubectl create rolebinding <name> --role=<role> --user=<user> -n <ns>
-
-# Create RoleBinding (to ClusterRole, namespaced)
-kubectl create rolebinding <name> --clusterrole=<cr> --serviceaccount=<ns>:<sa> -n <ns>
-
-# Create ClusterRoleBinding
-kubectl create clusterrolebinding <name> --clusterrole=<cr> --user=<user>
-
-# Check permissions
-kubectl auth can-i <verb> <resource> --as=<user> -n <ns>
-kubectl auth can-i <verb> <resource> --as=system:serviceaccount:<ns>:<sa> -n <ns>
-
-# List all RoleBindings
-kubectl get rolebinding -A -o wide
-
-# Find API group for a resource
-kubectl api-resources | grep <resource>
-```
-
-### Related Topics
-
-- 🔗 [ServiceAccounts](./admission-controllers.md) — admission controllers enforce RBAC policies at API level
-- 🔗 [Secrets](../workloads/secrets.md) — ServiceAccount tokens are stored as Secrets (pre-1.24) or projected volumes (1.24+)
-- 🔗 [Encrypting Secrets at Rest](./encrypting-secrets-at-rest.md) — protect ServiceAccount tokens stored in etcd

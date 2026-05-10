@@ -98,6 +98,7 @@ ls -lh /opt/etcd-backup.db
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -258,10 +259,6 @@ journalctl -xeu kubelet | tail -30
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Full Backup → Simulate Data Loss → Restore → Verify
 > ⏱️ **Recommended Time: 15 minutes**
 
@@ -355,6 +352,11 @@ kubectl get pods -A | grep -v Running | grep -v Completed
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 7 — Stacked vs External etcd Topology
 > ⏱️ **Recommended Time: 12 minutes**
 
@@ -445,98 +447,3 @@ Topology comparison:
 
 ---
 
-## 📌 Quick Reference
-
-### etcdctl Command Template
-
-```bash
-export ETCDCTL_API=3
-
-etcdctl <command> \
-  --endpoints=https://127.0.0.1:2379 \
-  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/server.crt \
-  --key=/etc/kubernetes/pki/etcd/server.key
-```
-
-### Backup & Restore Commands
-
-```bash
-# Save snapshot
-etcdctl snapshot save <path> [tls flags]
-
-# Verify snapshot
-etcdctl snapshot status <path> --write-out=table
-
-# Restore snapshot
-etcdctl snapshot restore <path> --data-dir=<new-dir>
-```
-
-### etcd Certificate Locations (kubeadm)
-
-```
-/etc/kubernetes/pki/etcd/
-├── ca.crt          ← --cacert
-├── ca.key
-├── server.crt      ← --cert
-├── server.key      ← --key
-├── peer.crt
-├── peer.key
-├── healthcheck-client.crt
-└── healthcheck-client.key
-```
-
-### Three Places to Update in etcd Manifest
-
-```yaml
-# /etc/kubernetes/manifests/etcd.yaml
-spec:
-  containers:
-  - command:
-    - --data-dir=/var/lib/etcd          # 1. command flag
-    volumeMounts:
-    - mountPath: /var/lib/etcd          # 2. container mount path
-      name: etcd-data
-  volumes:
-  - hostPath:
-      path: /var/lib/etcd               # 3. host path
-    name: etcd-data
-```
-
-### Full Restore Sequence
-
-```
-1. etcdctl snapshot save /opt/backup.db  [tls flags]
-2. etcdctl snapshot restore /opt/backup.db --data-dir=/var/lib/etcd-new
-3. Edit /etc/kubernetes/manifests/etcd.yaml — update data-dir in 3 places
-4. Wait for etcd pod to restart (kubelet detects manifest change)
-5. Wait for API server to reconnect to etcd
-6. kubectl get nodes  ← verify cluster is healthy
-```
-
-### Useful Commands
-
-```bash
-# Check etcd pod
-kubectl get pod etcd-controlplane -n kube-system
-kubectl describe pod etcd-controlplane -n kube-system
-
-# Get etcd flags
-grep -E "data-dir|cert|endpoints" /etc/kubernetes/manifests/etcd.yaml
-
-# Check etcd health
-etcdctl endpoint health [tls flags]
-
-# List etcd members
-etcdctl member list [tls flags]
-
-# Monitor etcd restart after manifest change
-watch crictl ps | grep etcd
-journalctl -xeu kubelet | tail -20
-```
-
-### Related Topics
-
-- 🔗 [kubeadm Cluster Upgrade](./kubeadm-cluster-upgrade.md) — always back up etcd before upgrading
-- 🔗 [Static Pods](../scheduling/static-pods.md) — etcd runs as a static pod; kubelet manages it via `/etc/kubernetes/manifests/`
-- 🔗 [Encrypting Secrets at Rest](./encrypting-secrets-at-rest.md) — etcd stores all secrets; encryption protects them at the storage layer

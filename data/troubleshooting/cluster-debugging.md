@@ -71,6 +71,11 @@ kubectl describe pod <pod-name> -n <namespace>
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Check Node Status
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -108,10 +113,6 @@ journalctl -u kubelet -n 100 --no-pager
 **Key Concept:** Use `kubectl describe node` to see conditions (Ready, MemoryPressure, DiskPressure, etc.). SSH into the node to verify system resources and kubelet service health.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -210,6 +211,7 @@ kubectl describe node <node-name>
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 

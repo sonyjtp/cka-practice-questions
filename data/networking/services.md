@@ -101,6 +101,11 @@ curl http://<NODE-IP>:30080
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Expose a Deployment with kubectl expose
 > ⏱️ **Recommended Time: 4 minutes**
 
@@ -128,10 +133,6 @@ kubectl get endpoints api-svc
 > **Key Concept:** `kubectl expose` is the fastest way to create a Service in the exam. It automatically copies the Deployment's pod selector labels into the Service. Always verify with `kubectl get endpoints` — if endpoints are empty, the selector is not matching any pods. Specify `--type` explicitly; default is `ClusterIP`.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -279,6 +280,7 @@ Common causes of empty endpoints:
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -396,63 +398,3 @@ kube-proxy routes to pod endpoint
 
 ---
 
-## 📌 Quick Reference
-
-### Service Types
-
-| Type | Accessible From | Use Case |
-|------|----------------|----------|
-| `ClusterIP` | Inside cluster only | Internal service-to-service communication |
-| `NodePort` | Outside via `<NodeIP>:<NodePort>` | Dev/lab external access, on-prem |
-| `LoadBalancer` | Outside via cloud LB IP | Production external access on cloud |
-| `ExternalName` | Inside cluster (CNAME) | Alias for external DNS names |
-| Headless (`clusterIP: None`) | Inside cluster (pod IPs) | StatefulSets, direct pod addressing |
-
-### Port Fields
-
-```yaml
-ports:
-- port: 80          # Port the Service listens on (clients connect here)
-  targetPort: 8080  # Port on the pod containers
-  nodePort: 30080   # Port on every node (NodePort/LoadBalancer only)
-  protocol: TCP     # TCP (default), UDP, SCTP
-```
-
-### DNS Name Formats
-
-```
-<service>                                    → same namespace only
-<service>.<namespace>                        → cross-namespace
-<service>.<namespace>.svc.cluster.local      → FQDN (always works)
-<pod>.<service>.<namespace>.svc.cluster.local → StatefulSet pod (headless)
-```
-
-### Useful Commands
-
-```bash
-# Expose a deployment as a Service
-kubectl expose deployment <name> --port=<port> --target-port=<port> --type=<type>
-
-# List Services
-kubectl get services -A
-
-# Check endpoints
-kubectl get endpoints <service-name>
-
-# Describe Service (shows selector, ports, endpoints)
-kubectl describe service <name>
-
-# Test DNS from inside cluster
-kubectl run dns-test --image=busybox:1.28 --restart=Never -- \
-  nslookup <service-name>.<namespace>.svc.cluster.local
-
-# Test connectivity from inside cluster
-kubectl run curl-test --image=curlimages/curl --restart=Never -- \
-  curl -s http://<service-name>.<namespace>.svc.cluster.local
-```
-
-### Related Topics
-
-- 🔗 [Network Policies](./network-policies.md) — control which pods can reach a Service
-- 🔗 [Ingress](./ingress.md) — HTTP/HTTPS routing to Services from outside the cluster
-- 🔗 [Multi-Container Pods](../workloads/multi-container-pods.md) — containers in the same pod communicate via localhost, not Services

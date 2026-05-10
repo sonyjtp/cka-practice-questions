@@ -92,6 +92,11 @@ kubectl get pods
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Identify Static Pods in the Cluster
 > ⏱️ **Recommended Time: 4 minutes**
 
@@ -126,10 +131,6 @@ ownerReferences:
 > **Key Concept:** Static pods can be identified by two characteristics: their name is suffixed with the node name (e.g., `-controlplane`), and their `ownerReferences` points to a `Node` object rather than a `ReplicaSet` or `DaemonSet`.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -248,6 +249,7 @@ kubectl get pod static-nginx-controlplane -w
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -312,51 +314,3 @@ kubectl get pods -A | grep Pending
 
 ---
 
-## 📌 Quick Reference
-
-| Concept | Description |
-|---------|-------------|
-| Static Pod | A pod managed directly by the kubelet, not the API server |
-| `staticPodPath` | Directory the kubelet watches for manifests (default: `/etc/kubernetes/manifests/`) |
-| Mirror Pod | Read-only API server representation of a static pod (cannot be deleted via `kubectl`) |
-| Name suffix | Static pod names are always suffixed with the node name (e.g., `pod-name-controlplane`) |
-| `ownerReferences.kind: Node` | How to confirm a pod is a static pod via `kubectl get pod -o yaml` |
-
-### Useful Commands
-
-```bash
-# Find the static pod path
-cat /var/lib/kubelet/config.yaml | grep staticPodPath
-
-# List static pod manifests
-ls /etc/kubernetes/manifests/
-
-# Create a static pod (drop manifest into the directory)
-cp my-pod.yaml /etc/kubernetes/manifests/
-
-# Delete a static pod (remove the manifest file)
-rm /etc/kubernetes/manifests/my-pod.yaml
-
-# Edit a static pod
-vi /etc/kubernetes/manifests/my-pod.yaml
-
-# Identify static pods (name ends with node name)
-kubectl get pods -A | grep controlplane
-
-# Confirm ownerReference is a Node
-kubectl get pod <pod-name> -n kube-system -o yaml | grep -A 5 ownerReferences
-
-# Check kubelet logs for manifest errors
-journalctl -u kubelet -f
-```
-
-### Static Pod vs DaemonSet — Cheat Sheet
-
-```
-Static Pod   →  Managed by kubelet directly; no scheduler or controller; no rolling updates
-DaemonSet    →  Managed by the API server; supports rolling updates, selectors, tolerations
-```
-
-### Related Topics
-
-- 🔗 [DaemonSets](./daemonsets.md) — API-server managed alternative for running a pod on every node

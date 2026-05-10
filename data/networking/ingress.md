@@ -114,6 +114,7 @@ curl http://app.example.com/web
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -300,10 +301,6 @@ curl http://other.example.com         # → fallback-svc (no matching host rule)
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Troubleshoot Ingress Returning 404 or 502
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -366,6 +363,11 @@ Root cause reference:
 > **Key Concept:** 404 from an Ingress usually means the routing rule doesn't match (wrong host, wrong path, wrong Ingress class). 502 means the rule matched but the backend is unreachable. Always isolate by testing: Ingress → Service → Pod independently. Use `kubectl describe ingress` to check the `Address` field — if empty, the Ingress Controller hasn't picked up the resource.
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 
@@ -458,87 +460,3 @@ curl -k https://app.example.com/unknown
 
 ---
 
-## 📌 Quick Reference
-
-### Ingress Resource Structure
-
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: example
-  annotations: {}          # controller-specific settings
-spec:
-  ingressClassName: nginx  # which controller handles this Ingress
-  tls:                     # optional TLS config
-  - hosts: [host]
-    secretName: tls-secret
-  defaultBackend:          # optional catch-all
-    service:
-      name: fallback-svc
-      port:
-        number: 80
-  rules:
-  - host: example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix   # Prefix | Exact | ImplementationSpecific
-        backend:
-          service:
-            name: my-svc
-            port:
-              number: 80
-```
-
-### pathType Comparison
-
-| `pathType` | `/foo` matches | `/foo/bar` matches | `/foobar` matches |
-|------------|---------------|-------------------|------------------|
-| `Prefix` | ✅ | ✅ | ❌ |
-| `Exact` | ✅ | ❌ | ❌ |
-| `ImplementationSpecific` | Controller-defined | Controller-defined | Controller-defined |
-
-### Common NGINX Ingress Annotations
-
-```yaml
-# Force HTTPS redirect
-nginx.ingress.kubernetes.io/ssl-redirect: "true"
-
-# Rewrite path (strip prefix before sending to backend)
-nginx.ingress.kubernetes.io/rewrite-target: /
-
-# Rate limiting
-nginx.ingress.kubernetes.io/limit-rps: "10"
-
-# CORS
-nginx.ingress.kubernetes.io/enable-cors: "true"
-```
-
-### Useful Commands
-
-```bash
-# List all Ingresses
-kubectl get ingress -A
-
-# Describe Ingress (shows rules, backends, TLS, address)
-kubectl describe ingress <name>
-
-# Check Ingress Controller pods
-kubectl get pods -n ingress-nginx
-
-# Check Ingress Controller logs
-kubectl logs -n ingress-nginx <controller-pod>
-
-# Create TLS secret from files
-kubectl create secret tls <name> --cert=<crt> --key=<key>
-
-# List available IngressClasses
-kubectl get ingressclass
-```
-
-### Related Topics
-
-- 🔗 [Services](./services.md) — Ingress routes to Services, which route to pods
-- 🔗 [Network Policies](./network-policies.md) — control which pods can be reached; works alongside Ingress
-- 🔗 [Secrets](../workloads/secrets.md) — TLS certificates are stored as `kubernetes.io/tls` Secrets

@@ -82,6 +82,11 @@ Priority Class Name:  high-priority
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Inspect Built-in System Priority Classes
 > ⏱️ **Recommended Time: 4 minutes**
 
@@ -151,10 +156,6 @@ kubectl describe pod test-pod | grep -i priority
 > **Key Concept:** Only **one** `PriorityClass` can have `globalDefault: true` at a time. If you try to create a second one with `globalDefault: true`, it will be rejected. Pods created before the default existed retain a priority of `0`.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -258,6 +259,11 @@ kubectl describe pod batch-pod | grep -i priority
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 7 — Diagnose Why a Pod Was Preempted
 > ⏱️ **Recommended Time: 8 minutes**
 
@@ -295,10 +301,6 @@ Signs of preemption:
 > **Key Concept:** Preempted pods are gracefully terminated. Check `kubectl get events` and `kubectl describe pod` for preemption-related messages. The node where the pod ran will also show a new high-priority pod that replaced it.
 
 </details>
-
----
-
-## 🔴 Hard Questions
 
 ---
 
@@ -451,53 +453,3 @@ kubectl describe resourcequota scoped-quota -n team-b
 
 ---
 
-## 📌 Quick Reference
-
-| Field | Description |
-|-------|-------------|
-| `value` | Integer priority — higher = more important (max ~2 billion) |
-| `globalDefault: true` | Applied to all pods without a `priorityClassName` (only one allowed) |
-| `preemptionPolicy: Never` | Pod waits in queue; does not evict lower-priority pods |
-| `preemptionPolicy: PreemptLowerPriority` | Default — pod evicts lower-priority pods to free resources |
-| `spec.priorityClassName` | Field on a Pod/Deployment template to assign a `PriorityClass` |
-
-### Built-in System Priority Classes
-
-| Name | Value | Purpose |
-|------|-------|---------|
-| `system-node-critical` | `2000001000` | Node-level critical components (e.g., `etcd`) |
-| `system-cluster-critical` | `2000000000` | Cluster-level critical components (e.g., `kube-dns`) |
-
-### Useful Commands
-
-```bash
-# List all PriorityClasses
-kubectl get priorityclass
-
-# Describe a PriorityClass
-kubectl describe priorityclass <name>
-
-# Check priority on a pod
-kubectl describe pod <pod-name> | grep -i priority
-
-# List pods sorted by priority
-kubectl get pods -o custom-columns="NAME:.metadata.name,PRIORITY:.spec.priority" --sort-by='.spec.priority'
-
-# Check for preemption events
-kubectl get events --sort-by='.lastTimestamp' | grep -i preempt
-```
-
-### Priority Value Guidelines
-
-```
-2000001000  →  system-node-critical    (built-in, do not use)
-2000000000  →  system-cluster-critical (built-in, do not use)
-1000000     →  Suggested max for user workloads (critical)
-500–100000  →  Standard application range
-0           →  Default when no PriorityClass is assigned
-```
-
-### Related Topics
-
-- 🔗 [Resource Requests, Limits and Quotas](./resource-requests-limits-quotas.md) — `ResourceQuota` with `scopeSelector` for PriorityClass-scoped limits
-- 🔗 [DaemonSets](./daemonsets.md) — system DaemonSets use `system-node-critical` priority

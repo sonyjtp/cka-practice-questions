@@ -88,6 +88,11 @@ kubectl describe deployment web-app | grep Image
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Recreate Strategy: Replace All Pods at Once
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -130,10 +135,6 @@ kubectl get deployment batch-processor -o jsonpath='{.spec.strategy.type}'
 > **Key Concept:** The `Recreate` strategy **terminates all existing pods before creating new ones**, causing a brief downtime. It is useful when the application cannot run two versions simultaneously (e.g., database schema migrations, singleton processes). There are no `maxUnavailable`/`maxSurge` options for `Recreate`.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -231,6 +232,7 @@ kubectl get pods -l app=web-app -o wide
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 
@@ -378,73 +380,3 @@ spec:
 
 ---
 
-## 📌 Quick Reference
-
-| Strategy | Behaviour | Downtime? | Use Case |
-|----------|-----------|-----------|----------|
-| `RollingUpdate` | Gradually replaces pods | ❌ No | Most web apps, stateless services |
-| `Recreate` | Kills all pods then creates new ones | ✅ Yes | Singleton apps, schema migrations |
-| Canary | Two Deployments share a Service | ❌ No | Gradual traffic shifting, A/B testing |
-
-### Rolling Update Parameters
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `maxUnavailable` | `25%` | Max pods that can be **down** during an update |
-| `maxSurge` | `25%` | Max **extra** pods above the desired count during an update |
-
-### Useful Commands
-
-```bash
-# Create / apply a deployment
-kubectl apply -f deployment.yaml
-
-# Update an image
-kubectl set image deployment/<name> <container>=<image>
-
-# Monitor a rollout
-kubectl rollout status deployment/<name>
-
-# View rollout history
-kubectl rollout history deployment/<name>
-
-# View details of a specific revision
-kubectl rollout history deployment/<name> --revision=<N>
-
-# Roll back to the previous revision
-kubectl rollout undo deployment/<name>
-
-# Roll back to a specific revision
-kubectl rollout undo deployment/<name> --to-revision=<N>
-
-# Pause a rollout (batch multiple changes)
-kubectl rollout pause deployment/<name>
-
-# Resume a paused rollout
-kubectl rollout resume deployment/<name>
-
-# Scale a deployment
-kubectl scale deployment/<name> --replicas=<N>
-
-# Patch update strategy
-kubectl patch deployment <name> -p '{"spec":{"strategy":{"type":"Recreate"}}}'
-
-# Check current strategy
-kubectl get deployment <name> -o jsonpath='{.spec.strategy}'
-```
-
-### Strategy Decision Tree
-
-```
-Does the app support running two versions simultaneously?
-├── YES → Use RollingUpdate (default)
-│         ├── Need gradual traffic testing? → Add a Canary Deployment
-│         └── Need to batch changes?        → Pause → change → Resume
-└── NO  → Use Recreate (accepts brief downtime)
-```
-
-### Related Topics
-
-- 🔗 [DaemonSets](../scheduling/daemonsets.md) — also supports `RollingUpdate` and `OnDelete` strategies
-- 🔗 [Resource Requests & Limits](../scheduling/resource-requests-limits-quotas.md) — pods that exceed limits during a rollout can cause it to stall
-- 🔗 [Labels, Selectors & Annotations](../scheduling/labels-selectors-annotations.md) — canary pattern relies on shared labels and selective Service selectors

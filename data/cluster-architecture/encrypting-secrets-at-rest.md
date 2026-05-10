@@ -87,6 +87,7 @@ resources:
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -190,10 +191,6 @@ ETCDCTL_API=3 etcdctl \
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 5 — Rotate the Encryption Key
 > ⏱️ **Recommended Time: 12 minutes**
 
@@ -272,6 +269,11 @@ ETCDCTL_API=3 etcdctl \
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 6 — Disable Encryption at Rest and Restore Plain Storage
 > ⏱️ **Recommended Time: 10 minutes**
 
@@ -326,68 +328,3 @@ ETCDCTL_API=3 etcdctl \
 
 ---
 
-## 📌 Quick Reference
-
-### Encryption Providers
-
-| Provider    | Key Size                  | Notes                                                       |
-|-------------|---------------------------|-------------------------------------------------------------|
-| `aescbc`    | 16, 24, or 32 bytes       | Recommended; CBC mode with PKCS#7 padding                   |
-| `aesgcm`    | 16, 24, or 32 bytes       | GCM mode; faster but keys should be rotated more frequently |
-| `secretbox` | 32 bytes                  | XSalsa20 + Poly1305                                         |
-| `kms`       | N/A (envelope encryption) | Delegates to external KMS (e.g., AWS KMS, Vault)            |
-| `identity`  | None                      | No encryption — stores plain base64                         |
-
-### Provider Order Rules
-
-```
-First provider  →  used for WRITES (encryption)
-All providers   →  tried in order for READS (decryption)
-
-Always include identity: {} last when enabling encryption
-  → allows reading pre-existing unencrypted Secrets during transition
-```
-
-### Key Rotation Phases
-
-```
-Phase 1: Add new key first, keep old key second → restart apiserver
-Phase 2: Re-write all secrets (kubectl get | kubectl replace)
-Phase 3: Remove old key → restart apiserver
-```
-
-### Useful Commands
-
-```bash
-# Generate a 32-byte base64 key
-head -c 32 /dev/urandom | base64
-
-# Restart kube-apiserver (static pod)
-touch /etc/kubernetes/manifests/kube-apiserver.yaml
-
-# Re-encrypt all secrets across all namespaces
-kubectl get secrets -A -o json | kubectl replace -f -
-
-# Read raw etcd value to verify encryption
-ETCDCTL_API=3 etcdctl \
-  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-  --cert=/etc/kubernetes/pki/etcd/server.crt \
-  --key=/etc/kubernetes/pki/etcd/server.key \
-  get /registry/secrets/<namespace>/<name> | hexdump -C | head -10
-
-# Check if apiserver has encryption flag
-cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep encryption
-```
-
-### etcd Value Prefixes
-
-```
-/registry/secrets/...          → NOT encrypted (plain base64)
-k8s:enc:aescbc:v1:key1:...    → Encrypted with aescbc key named key1
-k8s:enc:aesgcm:v1:key1:...    → Encrypted with aesgcm key named key1
-```
-
-### Related Topics
-
-- 🔗 [Secrets](../workloads/secrets.md) — base64 encoding vs actual encryption
-- 🔗 [Admission Controllers](./admission-controllers.md) — control what can be created in the cluster

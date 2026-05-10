@@ -116,6 +116,7 @@ kubectl config use-context dev-cluster
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -242,10 +243,6 @@ kubectl config get-contexts
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Create a kubeconfig for a New User from Scratch
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -293,6 +290,11 @@ KUBECONFIG=/tmp/alice-config kubectl get pods
 > **Key Concept:** A kubeconfig is the complete package a user needs: cluster endpoint, CA cert (to trust the API server), and user credentials (to prove identity). The CA cert goes in `clusters[].cluster.certificate-authority-data`; user certs go in `users[].user.client-certificate-data` and `client-key-data`. All are base64-encoded when using `--embed-certs=true`.
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 
@@ -365,62 +367,3 @@ Common kubeconfig issues:
 
 ---
 
-## 📌 Quick Reference
-
-### kubeconfig Commands
-
-```bash
-# View kubeconfig
-kubectl config view
-kubectl config view --raw          # show credentials unredacted
-kubectl config view --minify       # show only current context config
-
-# Contexts
-kubectl config get-contexts
-kubectl config current-context
-kubectl config use-context <name>
-
-# Set components
-kubectl config set-cluster <name> --server=<url> --certificate-authority=<ca> --embed-certs=true
-kubectl config set-credentials <name> --client-certificate=<crt> --client-key=<key> --embed-certs=true
-kubectl config set-context <name> --cluster=<c> --user=<u> --namespace=<ns>
-
-# Delete components
-kubectl config delete-context <name>
-kubectl config delete-cluster <name>
-kubectl config unset users.<name>
-
-# Set default namespace for current context
-kubectl config set-context --current --namespace=<ns>
-```
-
-### kubeconfig File Structure
-
-```
-~/.kube/config
-├── current-context    active context name
-├── clusters[]         API server URL + CA cert
-├── users[]            client cert + key (or token)
-└── contexts[]         cluster + user + namespace binding
-```
-
-### KUBECONFIG Env Var
-
-```bash
-# Use a specific file
-export KUBECONFIG=/path/to/config
-
-# Merge multiple files
-export KUBECONFIG=~/.kube/config:/tmp/other-config
-
-# Reset to default
-unset KUBECONFIG
-
-# One-off with different kubeconfig
-kubectl get nodes --kubeconfig=/tmp/other-config
-```
-
-### Related Topics
-
-- 🔗 [TLS Certificates](./tls-certificates.md) — user certs embedded in kubeconfig are signed by the cluster CA
-- 🔗 [RBAC](../cluster-architecture/rbac.md) — kubeconfig provides identity; RBAC controls what that identity can do

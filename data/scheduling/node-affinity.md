@@ -105,6 +105,11 @@ kubectl describe pod prod-pod | grep -A 10 Affinity
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Preferred Node Affinity (`preferredDuringSchedulingIgnoredDuringExecution`)
 > ⏱️ **Recommended Time: 6 minutes**
 
@@ -146,10 +151,6 @@ kubectl describe pod preferred-pod | grep -A 10 Affinity
 > **Key Concept:** `preferredDuringSchedulingIgnoredDuringExecution` is a **soft** rule. The scheduler tries to place the pod on a matching node, but falls back to any available node if no match is found. The `weight` (1–100) influences the preference priority.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -313,6 +314,7 @@ kubectl get pod or-affinity-pod -o wide
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -468,56 +470,3 @@ A toleration only **allows** a pod to be scheduled on a tainted node — it does
 
 ---
 
-## 📌 Quick Reference
-
-| Rule Type | Behaviour |
-|-----------|-----------|
-| `requiredDuringSchedulingIgnoredDuringExecution` | **Hard** rule — pod will not schedule if no node matches |
-| `preferredDuringSchedulingIgnoredDuringExecution` | **Soft** rule — scheduler prefers matching nodes, falls back if none exist |
-| `nodeSelectorTerms` (multiple entries) | Combined with **OR** — node must satisfy at least one term |
-| `matchExpressions` (multiple entries in one term) | Combined with **AND** — node must satisfy all expressions |
-
-### Operators
-
-| Operator | Behaviour |
-|----------|-----------|
-| `In` | Label value must match one of the listed values |
-| `NotIn` | Label value must not match any of the listed values |
-| `Exists` | Label key must be present (any value) |
-| `DoesNotExist` | Label key must not be present |
-| `Gt` | Label value must be greater than the specified value (numeric strings) |
-| `Lt` | Label value must be less than the specified value (numeric strings) |
-
-### Useful Commands
-
-```bash
-# Label a node
-kubectl label node <node-name> key=value
-
-# Remove a node label
-kubectl label node <node-name> key-
-
-# View all node labels
-kubectl get nodes --show-labels
-
-# View a specific node's labels
-kubectl describe node <node-name> | grep -A 10 Labels
-
-# Check pod affinity rules
-kubectl describe pod <pod-name> | grep -A 20 Affinity
-
-# Find nodes matching a label selector
-kubectl get nodes -l hardware=gpu
-```
-
-### `nodeSelector` vs Node Affinity — Cheat Sheet
-
-```
-nodeSelector          →  Simple key=value match, no operators, hard rule only
-nodeAffinity required →  Hard rule with full operator support (In, NotIn, Exists, …)
-nodeAffinity preferred →  Soft rule with weights — pod still schedules if no match
-```
-
-### Related Topics
-
-- 🔗 [Taints and Tolerations](./taints-and-tolerations.md) — complementary scheduling mechanism; see **Question 8** for a combined example

@@ -108,6 +108,11 @@ kubectl get nodes <node-name> -o yaml | grep -A5 conditions
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Check API Server Component Status
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -148,10 +153,6 @@ ls -la /etc/kubernetes/pki/apiserver.*
 **Key Concept:** API server runs as a static pod on control plane. Check pod status with `kubectl`, service logs, and port 6443 listening status.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -375,6 +376,7 @@ kubectl describe node <node-name>
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 

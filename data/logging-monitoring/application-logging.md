@@ -115,6 +115,11 @@ kubectl describe pod crashing-pod | grep -A 20 "Events:"
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — View logs from multi-container pods
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -163,10 +168,6 @@ kubectl logs -f multi-pod --all-containers=true
 > **Key Concept:** Multi-container pods require the `--container` (`-c`) flag to specify which container's logs to view. Use `--all-containers=true` to see logs from all containers interleaved.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -308,6 +309,7 @@ Common failure scenarios with log patterns:
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -353,11 +355,11 @@ grep "ERROR" $LOG_FILE
 
 Log file locations by container runtime:
 
-| Runtime | Log Location |
-|---------|--------------|
-| **Docker** | `/var/lib/docker/containers/{container-id}/{container-id}-json.log` |
+| Runtime        | Log Location                                                           |
+|----------------|------------------------------------------------------------------------|
+| **Docker**     | `/var/lib/docker/containers/{container-id}/{container-id}-json.log`    |
 | **Containerd** | `/var/lib/containerd/io.containerd.grpc.v1.containers/{container-id}/` |
-| **CRI-O** | `/var/log/pods/{namespace}_{pod-name}_{pod-id}/{container-name}/` |
+| **CRI-O**      | `/var/log/pods/{namespace}_{pod-name}_{pod-id}/{container-name}/`      |
 
 ```bash
 # Find which container runtime is used
@@ -382,35 +384,3 @@ cat /var/lib/docker/containers/$CONTAINER_ID/${CONTAINER_ID}-json.log | jq '.'
 
 ---
 
-## 📌 Quick Reference
-
-```bash
-# View logs
-kubectl logs <pod-name>                           # View pod logs
-kubectl logs <pod-name> -c <container-name>       # Specific container
-kubectl logs <pod-name> --previous                # Previous restart logs
-kubectl logs <pod-name> --all-containers=true     # All containers
-kubectl logs -f <pod-name>                        # Follow logs
-kubectl logs <pod-name> --tail=50                 # Last 50 lines
-kubectl logs <pod-name> --since=1h                # Last hour
-kubectl logs <pod-name> --timestamps=true         # With timestamps
-kubectl logs -l <label>=<value>                   # All pods with label
-kubectl logs -l <label>=<value> --all-containers  # All containers in labeled pods
-
-# Debugging
-kubectl describe pod <pod-name>                   # Events and status
-kubectl get pod <pod-name> -o yaml                # Full spec
-kubectl exec <pod-name> -- command                # Run command in pod
-kubectl port-forward <pod-name> 8080:8080         # Port forward
-kubectl attach <pod-name> -it                     # Attach to pod
-
-# Node-level (emergency)
-ssh <node-name>
-tail -f /var/log/containers/{namespace}_{pod}_{id}/{container}*.log
-cat /var/lib/docker/containers/{container-id}/*-json.log | jq '.'
-```
-
-### Related Topics
-
-- 🔗 [Pod Fundamentals](./pods.md) — Pod lifecycle, debugging
-- 🔗 [Multi-container Pods](./multi-container-pods.md) — Sidecar containers, container communication

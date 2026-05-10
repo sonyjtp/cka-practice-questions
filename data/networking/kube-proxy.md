@@ -190,6 +190,11 @@ subsets:
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Test service connectivity
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -253,10 +258,6 @@ Client Pod
 > **Key Concept:** Services provide stable IP + DNS name. Kube-proxy (via iptables/IPVS) handles the routing translation. Test with port-forward or debug pods.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -452,6 +453,7 @@ Service not working?
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -597,39 +599,3 @@ sudo iptables -X
 
 ---
 
-## 📌 Quick Reference
-
-```bash
-# Check kube-proxy mode and logs
-kubectl get daemonset -n kube-system kube-proxy -o yaml | grep proxy-mode
-kubectl logs -n kube-system -l k8s-app=kube-proxy -f
-
-# View services and endpoints
-kubectl get svc
-kubectl get endpoints
-kubectl describe endpoints <service>
-
-# Test service connectivity
-kubectl run debug --image=busybox:1.28 -it --rm -- sh
-# Inside: wget -O- http://<service>:<port>
-
-# Diagnose iptables (on node)
-sudo iptables -L -n -t nat | grep KUBE-SERVICES
-sudo iptables -L -n -v -t nat | head -30
-
-# Diagnose IPVS (if in IPVS mode)
-sudo ipvsadm -ln
-
-# DNS resolution test
-nslookup <service>
-kubectl run debug --image=busybox:1.28 -it --rm -- nslookup <service>
-
-# View pod listening ports
-kubectl exec <pod> -- netstat -tlnp
-```
-
-### Related Topics
-
-- 🔗 [Services](./services.md) — Service types and creation
-- 🔗 [Service Networking](./service-networking.md) — Advanced service networking
-- 🔗 [Network Policies](./network-policies.md) — Traffic control

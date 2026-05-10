@@ -73,6 +73,11 @@ kubectl get secret webapp-tls -o yaml
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Inject All Secret Keys as Environment Variables
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -108,10 +113,6 @@ kubectl exec db-pod -- env | grep -E "DB_USER|DB_PASSWORD|DB_HOST"
 > **Key Concept:** `envFrom.secretRef` works identically to `envFrom.configMapRef` but for Secrets. Inside the container, the values are **automatically base64-decoded** — the application sees plain text. Note: env vars are visible to anyone who can exec into the pod, so volume mounts are considered more secure for sensitive data.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -246,6 +247,7 @@ kubectl describe pod private-pod | grep -A 2 "Image"
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -350,79 +352,3 @@ kubectl delete secret api-keys
 
 ---
 
-## 📌 Quick Reference
-
-### Secret Types
-
-| Type | Created with | Use Case |
-|------|-------------|----------|
-| `Opaque` | `secret generic` | Arbitrary key-value data (default) |
-| `kubernetes.io/tls` | `secret tls` | TLS certificate and private key |
-| `kubernetes.io/dockerconfigjson` | `secret docker-registry` | Private container registry credentials |
-| `kubernetes.io/service-account-token` | Auto-created | ServiceAccount API token |
-
-### Injection Methods
-
-| Method | Field | Loads | Notes |
-|--------|-------|-------|-------|
-| `envFrom.secretRef` | All keys | As env vars | Entire Secret at once |
-| `env.valueFrom.secretKeyRef` | Single key | As named env var | Custom variable name |
-| Volume mount (no items) | All keys | As decoded files | Each key = one file |
-| Volume mount (with items) | Selected keys | As named files | Custom filename + permissions |
-
-### Useful Commands
-
-```bash
-# Create generic secret from literals
-kubectl create secret generic <name> --from-literal=KEY=VALUE
-
-# Create TLS secret
-kubectl create secret tls <name> --cert=tls.crt --key=tls.key
-
-# Create docker-registry secret
-kubectl create secret docker-registry <name> \
-  --docker-server=<server> \
-  --docker-username=<user> \
-  --docker-password=<pass>
-
-# View secret (base64-encoded)
-kubectl get secret <name> -o yaml
-
-# Decode a specific key
-kubectl get secret <name> -o jsonpath='{.data.<key>}' | base64 -d
-
-# Edit a secret (values must be base64-encoded manually if editing yaml)
-kubectl edit secret <name>
-
-# Delete a secret
-kubectl delete secret <name>
-```
-
-### base64 Encoding/Decoding
-
-```bash
-# Encode
-echo -n "mypassword" | base64
-# bXlwYXNzd29yZA==
-
-# Decode
-echo "bXlwYXNzd29yZA==" | base64 -d
-# mypassword
-
-# Note: use -n with echo to avoid encoding the newline character
-```
-
-### Secrets vs ConfigMaps
-
-```
-ConfigMap  →  Non-sensitive config (ports, URLs, feature flags)
-Secret     →  Sensitive data (passwords, tokens, certificates)
-
-Both support:  envFrom, valueFrom, volume mounts, immutability
-Secret adds:   base64 storage, type field, stricter RBAC recommendations
-```
-
-### Related Topics
-
-- 🔗 [ConfigMaps](./configmaps.md) — same injection patterns; used for non-sensitive data
-- 🔗 [Encrypting Secrets at Rest](../cluster-architecture/encrypting-secrets-at-rest.md) — Secrets are only base64-encoded by default; encryption must be explicitly configured

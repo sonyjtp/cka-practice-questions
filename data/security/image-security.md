@@ -88,6 +88,7 @@ kubectl describe pod private-pod | grep -E "Image:|Pull"
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -194,10 +195,6 @@ kubectl describe pod always-pull-pod | grep -E "Pull|Image"
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 5 — Troubleshoot ImagePullBackOff
 > ⏱️ **Recommended Time: 8 minutes**
 
@@ -277,6 +274,11 @@ Root cause table:
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 6 — Restrict Images Using an Admission Controller
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -351,57 +353,3 @@ Image security layers:
 
 ---
 
-## 📌 Quick Reference
-
-### Create imagePullSecret
-
-```bash
-kubectl create secret docker-registry <name> \
-  --docker-server=<registry> \
-  --docker-username=<user> \
-  --docker-password=<pass> \
-  --docker-email=<email> \
-  -n <namespace>
-```
-
-### Attach to Pod
-
-```yaml
-spec:
-  imagePullSecrets:
-  - name: <secret-name>
-  containers:
-  - image: <private-registry>/image:tag
-```
-
-### Attach to ServiceAccount (all pods inherit)
-
-```bash
-kubectl patch serviceaccount <sa-name> \
-  -p '{"imagePullSecrets": [{"name": "<secret-name>"}]}'
-```
-
-### imagePullPolicy Summary
-
-```
-Always        → always pull (default when tag is "latest")
-IfNotPresent  → pull only if not on node (default for specific tags)
-Never         → never pull (image must pre-exist on node)
-```
-
-### Pod Security Admission Labels
-
-```bash
-# Enforce restricted security standard on a namespace
-kubectl label namespace <ns> \
-  pod-security.kubernetes.io/enforce=restricted
-
-# Standards: privileged | baseline | restricted
-# Modes:     enforce | warn | audit
-```
-
-### Related Topics
-
-- 🔗 [Security Contexts](./security-contexts.md) — OS-level security settings for containers
-- 🔗 [Secrets](../workloads/secrets.md) — imagePullSecrets are a type of Kubernetes Secret
-- 🔗 [Admission Controllers](../cluster-architecture/admission-controllers.md) — enforce image policies at the API level

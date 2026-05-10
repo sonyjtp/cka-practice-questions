@@ -108,6 +108,11 @@ kubectl get secret -n <namespace> $(kubectl get secret -n <namespace> | grep <sa
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Check StorageClass Provisioner Status
 > ⏱️ **Recommended Time: 5 minutes**
 
@@ -162,10 +167,6 @@ kubectl get pv
 **Key Concept:** Provisioner pod must be running and have permissions to create PersistentVolumes. Check pod status and logs for errors.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -421,6 +422,7 @@ kubectl auth reconcile -f rbac-config.yaml
 </details>
 
 ---
+
 
 ## 🔴 Hard Questions
 

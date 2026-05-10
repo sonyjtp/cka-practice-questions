@@ -101,6 +101,7 @@ Drain flags reference:
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -251,10 +252,6 @@ Control plane vs worker node upgrade commands:
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Full Cluster Upgrade: Control Plane + 2 Workers
 > ⏱️ **Recommended Time: 15 minutes**
 
@@ -368,6 +365,11 @@ kubectl get nodes
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 7 — Troubleshoot a Failed kubeadm upgrade apply
 > ⏱️ **Recommended Time: 12 minutes**
 
@@ -435,83 +437,3 @@ Common failure causes:
 
 ---
 
-## 📌 Quick Reference
-
-### Full Upgrade Sequence (One Minor Version)
-
-```
-Control Plane Node:
-  1. apt-get install kubeadm=<version>
-  2. kubeadm upgrade plan
-  3. kubeadm upgrade apply <version>
-  4. kubectl drain controlplane --ignore-daemonsets
-  5. apt-get install kubelet=<version> kubectl=<version>
-  6. systemctl daemon-reload && systemctl restart kubelet
-  7. kubectl uncordon controlplane
-
-Each Worker Node (repeat per worker):
-  1. kubectl drain <worker> --ignore-daemonsets    ← from control plane
-  2. ssh <worker>
-  3. apt-get install kubeadm=<version>
-  4. kubeadm upgrade node
-  5. apt-get install kubelet=<version> kubectl=<version>
-  6. systemctl daemon-reload && systemctl restart kubelet
-  7. exit
-  8. kubectl uncordon <worker>                     ← from control plane
-```
-
-### Key Files and Paths
-
-```
-/etc/kubernetes/manifests/          Static pod manifests (apiserver, etcd, etc.)
-/etc/kubernetes/tmp/                kubeadm upgrade backups
-/var/lib/kubelet/config.yaml        kubelet configuration
-/etc/apt/sources.list.d/            Kubernetes apt repository config
-```
-
-### Useful Commands
-
-```bash
-# Check node versions
-kubectl get nodes
-
-# Upgrade plan
-kubeadm upgrade plan [version]
-
-# Apply upgrade (control plane only)
-kubeadm upgrade apply v1.30.0
-
-# Upgrade worker node config
-kubeadm upgrade node
-
-# Drain a node
-kubectl drain <node> --ignore-daemonsets --delete-emptydir-data
-
-# Uncordon a node
-kubectl uncordon <node>
-
-# Check kubelet status
-systemctl status kubelet
-journalctl -xeu kubelet | tail -30
-
-# Hold/unhold package versions
-apt-mark hold kubeadm kubelet kubectl
-apt-mark unhold kubeadm kubelet kubectl
-
-# Show available versions
-apt-cache madison kubeadm
-```
-
-### Version Skew Policy
-
-```
-kubeadm:  must match target version before running upgrade
-kubelet:  can be up to 2 minor versions behind kube-apiserver
-kubectl:  can be ±1 minor version from kube-apiserver
-```
-
-### Related Topics
-
-- 🔗 [etcd Backup & Restore](./etcd-backup-restore.md) — always back up etcd before a cluster upgrade
-- 🔗 [Static Pods](../scheduling/static-pods.md) — control plane components run as static pods managed by kubelet
-- 🔗 [Logging & Monitoring](../logging-monitoring/logging-and-monitoring.md) — use `kubectl logs` and `journalctl` to debug upgrade failures

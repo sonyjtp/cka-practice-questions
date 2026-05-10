@@ -91,6 +91,11 @@ Pods with lower priority are evicted first when a node is under memory pressure.
 
 ---
 
+
+## 🟡 Medium Questions
+
+---
+
 ### Question 3 — Creating a LimitRange
 > ⏱️ **Recommended Time: 6 minutes**
 
@@ -136,10 +141,6 @@ kubectl describe limitrange default-limits -n dev
 > **Key Concept:** A `LimitRange` applies default resource requests and limits to containers in a namespace that do not specify their own. This prevents unbounded resource consumption by pods that omit resource fields entirely.
 
 </details>
-
----
-
-## 🟡 Medium Questions
 
 ---
 
@@ -328,6 +329,7 @@ kubectl get pod memory-hog
 
 ---
 
+
 ## 🔴 Hard Questions
 
 ---
@@ -477,49 +479,3 @@ requests.memory   64Mi   320Mi
 
 ---
 
-## 📌 Quick Reference
-
-| Object | Scope | Purpose |
-|--------|-------|---------|
-| `resources.requests` | Container | Minimum resources guaranteed; used by scheduler for node selection |
-| `resources.limits` | Container | Maximum resources allowed; enforced at runtime |
-| `LimitRange` | Namespace | Sets default, min, and max resource constraints per container/pod/PVC |
-| `ResourceQuota` | Namespace | Caps total resource consumption and object counts across the namespace |
-
-### QoS Classes
-
-| Class | Condition | Eviction Priority |
-|-------|-----------|-------------------|
-| **Guaranteed** | Requests == Limits for all containers and all resources | Last to be evicted |
-| **Burstable** | At least one container has a request or limit set | Middle priority |
-| **BestEffort** | No requests or limits set on any container | First to be evicted |
-
-### Useful Commands
-
-```bash
-# View resource requests and limits on all pods
-kubectl get pods -o custom-columns="NAME:.metadata.name,CPU-REQ:.spec.containers[*].resources.requests.cpu,MEM-REQ:.spec.containers[*].resources.requests.memory"
-
-# Check QoS class of a pod
-kubectl describe pod <pod-name> | grep "QoS Class"
-
-# Check for OOMKilled
-kubectl describe pod <pod-name> | grep -A 5 "Last State"
-
-# View LimitRange details
-kubectl describe limitrange <name> -n <namespace>
-
-# View ResourceQuota usage
-kubectl describe resourcequota <name> -n <namespace>
-
-# Set resource requests/limits on a running deployment
-kubectl set resources deployment <name> --requests=cpu=100m,memory=64Mi --limits=cpu=200m,memory=128Mi
-```
-
-### Common Exit Codes
-
-```
-Exit Code 137  →  OOMKilled (memory limit exceeded — killed by SIGKILL)
-Exit Code 1    →  Application error (check logs)
-Exit Code 0    →  Clean exit
-```

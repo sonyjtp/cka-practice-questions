@@ -139,6 +139,7 @@ kubectl label pod <pod-name> app=web
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -370,10 +371,6 @@ Service types summary:
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Troubleshoot: Service Not Reachable
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -453,6 +450,11 @@ Systematic service troubleshooting checklist:
 
 ---
 
+
+## 🔴 Hard Questions
+
+---
+
 ### Question 7 — Understand Service DNS and FQDN
 > ⏱️ **Recommended Time: 7 minutes**
 
@@ -518,50 +520,3 @@ DNS name formats:
 
 ---
 
-## 📌 Quick Reference
-
-### Service Types
-
-```
-ClusterIP      Internal VIP — cluster-only access
-NodePort       ClusterIP + port on every node (30000-32767)
-LoadBalancer   NodePort + cloud load balancer
-ExternalName   CNAME alias to external DNS name
-Headless       clusterIP: None — direct pod IP DNS
-```
-
-### Service Commands
-
-```bash
-# Create
-kubectl expose deployment <name> --port=<port> --type=<type>
-kubectl create service clusterip <name> --tcp=<port>:<targetPort>
-
-# Inspect
-kubectl get svc
-kubectl get endpoints <svc-name>
-kubectl describe svc <svc-name>
-
-# Test from pod
-kubectl exec <pod> -- wget -qO- http://<svc-name>
-kubectl exec <pod> -- nslookup <svc-name>
-kubectl exec <pod> -- cat /etc/resolv.conf
-
-# kube-proxy rules
-iptables -t nat -L KUBE-SERVICES | grep <svc-name>
-ipvsadm -ln | grep <cluster-ip>
-```
-
-### DNS Name Format
-
-```
-<service>.<namespace>.svc.cluster.local
-<pod>.<service>.<namespace>.svc.cluster.local   (StatefulSet pods)
-```
-
-### Related Topics
-
-- 🔗 [CoreDNS](./coredns.md) — DNS server that resolves service names
-- 🔗 [Cluster Networking](./cluster-networking.md) — kube-proxy modes
-- 🔗 [Ingress](./ingress.md) — HTTP routing on top of Services
-- 🔗 [Network Policies](./network-policies.md) — controlling service traffic

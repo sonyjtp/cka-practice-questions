@@ -98,6 +98,7 @@ kubectl exec multi-pod -c sidecar -- env
 
 ---
 
+
 ## 🟡 Medium Questions
 
 ---
@@ -289,10 +290,6 @@ kubectl logs adapter-pod -c adapter --follow
 
 ---
 
-## 🔴 Hard Questions
-
----
-
 ### Question 6 — Troubleshoot a Restarting Container in a Multi-Container Pod
 > ⏱️ **Recommended Time: 9 minutes**
 
@@ -350,6 +347,11 @@ Restart reason reference:
 > **Key Concept:** In a multi-container pod, one container restarting does not automatically restart others — each container has its own restart counter. Use `kubectl describe pod` to see per-container state and `--previous` to get the logs of the last failed run. A container with `Exit Code: 0` that keeps restarting means it has no long-running foreground process.
 
 </details>
+
+---
+
+
+## 🔴 Hard Questions
 
 ---
 
@@ -419,51 +421,3 @@ Without `shareProcessNamespace`:
 
 ---
 
-## 📌 Quick Reference
-
-### Multi-Container Patterns
-
-| Pattern | Purpose | Communication |
-|---------|---------|---------------|
-| **Sidecar** | Extends main container (logging, metrics, sync) | Shared volume / localhost |
-| **Ambassador** | Proxies outbound connections on behalf of main | localhost (shared network) |
-| **Adapter** | Normalises main container output for external consumers | Shared volume |
-
-### What Containers in a Pod Share
-
-| Resource | Shared? | Notes |
-|----------|---------|-------|
-| Network namespace | ✅ Yes | Same IP, communicate via `localhost` |
-| `emptyDir` volumes | ✅ When mounted | Must be explicitly mounted in each container |
-| PID namespace | ❌ By default | Enable with `shareProcessNamespace: true` |
-| Filesystem | ❌ By default | Each container has its own root fs |
-| Environment variables | ❌ No | Defined per-container |
-
-### Useful Commands
-
-```bash
-# Logs from a specific container
-kubectl logs <pod> -c <container>
-
-# Follow logs
-kubectl logs <pod> -c <container> --follow
-
-# Exec into a specific container
-kubectl exec -it <pod> -c <container> -- sh
-
-# Run a one-off command
-kubectl exec <pod> -c <container> -- <command>
-
-# Check per-container restart counts
-kubectl get pod <pod> -o jsonpath=\
-'{range .status.containerStatuses[*]}{.name}{": "}{.restartCount}{"\n"}{end}'
-
-# Describe pod — shows all container states
-kubectl describe pod <pod>
-```
-
-### Related Topics
-
-- 🔗 [Init Containers](./init-containers.md) — run before main containers; used for setup tasks
-- 🔗 [Logging & Monitoring](../logging-monitoring/logging-and-monitoring.md) — sidecar log forwarder pattern covered in Q8
-- 🔗 [ConfigMaps](./configmaps.md) — inject config into specific containers using `envFrom` or volumes
