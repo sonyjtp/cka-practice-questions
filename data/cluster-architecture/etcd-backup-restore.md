@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 8–10 minutes    |
-| 🔴 Hard    | 12–15 minutes   |
-
----
-
 > ℹ️ **Scope Note:** On the CKA exam, etcd runs as a static pod on the control plane node (stacked topology). All `etcdctl` commands must be run with TLS certificates. The certificates are found at `/etc/kubernetes/pki/etcd/`. Always set `ETCDCTL_API=3` before running any `etcdctl` command.
 
 ---
@@ -439,15 +429,15 @@ etcdctl snapshot save /opt/external-backup.db \
 
 Topology comparison:
 
-| | Stacked etcd | External etcd |
-|--|-------------|---------------|
-| etcd runs on | Control plane node | Separate dedicated nodes |
-| Risk | Control plane failure = etcd failure | Isolated — etcd failure ≠ control plane failure |
-| CKA exam | ✅ Default (kubeadm) | Rarely tested |
-| Certificates | `/etc/kubernetes/pki/etcd/` | Varies by setup |
-| `--etcd-servers` | `https://127.0.0.1:2379` | Remote IP |
-| Backup location | Run on control plane | Run on etcd nodes |
-| HA setup | Needs multiple control plane nodes | Dedicated etcd cluster (3 or 5 nodes) |
+|                  | Stacked etcd                         | External etcd                                   |
+|------------------|--------------------------------------|-------------------------------------------------|
+| etcd runs on     | Control plane node                   | Separate dedicated nodes                        |
+| Risk             | Control plane failure = etcd failure | Isolated — etcd failure ≠ control plane failure |
+| CKA exam         | ✅ Default (kubeadm)                  | Rarely tested                                   |
+| Certificates     | `/etc/kubernetes/pki/etcd/`          | Varies by setup                                 |
+| `--etcd-servers` | `https://127.0.0.1:2379`             | Remote IP                                       |
+| Backup location  | Run on control plane                 | Run on etcd nodes                               |
+| HA setup         | Needs multiple control plane nodes   | Dedicated etcd cluster (3 or 5 nodes)           |
 
 > **Key Concept:** The CKA exam almost always uses **stacked etcd** (kubeadm default). The key to identifying it is: (1) `etcd-controlplane` pod exists in `kube-system`, and (2) `--etcd-servers=https://127.0.0.1:2379` in the apiserver manifest. For external etcd, the certificates used are the **API server's etcd client certificates** (`apiserver-etcd-client.crt/key`), not the etcd server certificates.
 

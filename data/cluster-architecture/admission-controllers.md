@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 ## 🟢 Easy Questions
 
 ---
@@ -286,10 +276,10 @@ Explain the difference between `MutatingAdmissionWebhook` and `ValidatingAdmissi
 
 **Key Difference:**
 
-| Type | Purpose | Order |
-|------|---------|-------|
-| `MutatingAdmissionWebhook` | **Modifies** the incoming object (e.g., injects sidecars, adds labels, sets defaults) | Runs **first** |
-| `ValidatingAdmissionWebhook` | **Validates** the object and approves or rejects it — cannot modify | Runs **second** |
+| Type                         | Purpose                                                                               | Order           |
+|------------------------------|---------------------------------------------------------------------------------------|-----------------|
+| `MutatingAdmissionWebhook`   | **Modifies** the incoming object (e.g., injects sidecars, adds labels, sets defaults) | Runs **first**  |
+| `ValidatingAdmissionWebhook` | **Validates** the object and approves or rejects it — cannot modify                   | Runs **second** |
 
 ```bash
 # 1. List all ValidatingWebhookConfigurations
@@ -376,16 +366,16 @@ kubectl cluster-info
 
 ## 📌 Quick Reference
 
-| Admission Controller | Purpose |
-|----------------------|---------|
-| `NamespaceLifecycle` | Blocks resource creation in terminating namespaces; protects system namespaces |
-| `LimitRanger` | Enforces `LimitRange` defaults and min/max constraints |
-| `ResourceQuota` | Enforces `ResourceQuota` limits on namespace resource consumption |
-| `NodeRestriction` | Limits what kubelets can modify on nodes and pods |
-| `DefaultStorageClass` | Assigns a default `StorageClass` to PVCs that don't request one |
-| `PriorityClass` | Ensures `priorityClassName` references a valid `PriorityClass` |
-| `MutatingAdmissionWebhook` | Calls external webhooks that can modify objects |
-| `ValidatingAdmissionWebhook` | Calls external webhooks that can approve or reject objects |
+| Admission Controller         | Purpose                                                                        |
+|------------------------------|--------------------------------------------------------------------------------|
+| `NamespaceLifecycle`         | Blocks resource creation in terminating namespaces; protects system namespaces |
+| `LimitRanger`                | Enforces `LimitRange` defaults and min/max constraints                         |
+| `ResourceQuota`              | Enforces `ResourceQuota` limits on namespace resource consumption              |
+| `NodeRestriction`            | Limits what kubelets can modify on nodes and pods                              |
+| `DefaultStorageClass`        | Assigns a default `StorageClass` to PVCs that don't request one                |
+| `PriorityClass`              | Ensures `priorityClassName` references a valid `PriorityClass`                 |
+| `MutatingAdmissionWebhook`   | Calls external webhooks that can modify objects                                |
+| `ValidatingAdmissionWebhook` | Calls external webhooks that can approve or reject objects                     |
 
 ### Admission Controller Request Flow
 

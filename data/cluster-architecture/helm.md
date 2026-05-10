@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 > ℹ️ **Scope Note:** Helm is the package manager for Kubernetes. The CKA exam expects you to install, upgrade, roll back, and inspect Helm releases, as well as work with chart repositories. Helm v3 (no Tiller) is used throughout this file.
 
 ---

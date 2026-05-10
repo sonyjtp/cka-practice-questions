@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 ## 🟢 Easy Questions
 
 ---
@@ -252,18 +242,18 @@ kubectl logs app-with-logs -c log-forwarder --follow
 
 ## 📌 Quick Reference
 
-| Concept | Description |
-|---------|-------------|
-| `kubectl logs <pod>` | Fetch stdout/stderr logs from a pod |
-| `--tail=N` | Show only the last N lines |
-| `--follow` / `-f` | Stream logs in real time |
-| `--previous` / `-p` | Fetch logs from the previously crashed container |
-| `-c <container>` | Select a specific container in a multi-container pod |
-| `-l <selector>` | Fetch logs from all pods matching a label |
-| `--prefix` | Prefix each log line with the pod name (use with `-l`) |
-| `kubectl top nodes` | Show CPU/memory usage per node (requires Metrics Server) |
-| `kubectl top pods` | Show CPU/memory usage per pod (requires Metrics Server) |
-| `--sort-by=cpu` / `--sort-by=memory` | Sort `kubectl top` output |
+| Concept                              | Description                                              |
+|--------------------------------------|----------------------------------------------------------|
+| `kubectl logs <pod>`                 | Fetch stdout/stderr logs from a pod                      |
+| `--tail=N`                           | Show only the last N lines                               |
+| `--follow` / `-f`                    | Stream logs in real time                                 |
+| `--previous` / `-p`                  | Fetch logs from the previously crashed container         |
+| `-c <container>`                     | Select a specific container in a multi-container pod     |
+| `-l <selector>`                      | Fetch logs from all pods matching a label                |
+| `--prefix`                           | Prefix each log line with the pod name (use with `-l`)   |
+| `kubectl top nodes`                  | Show CPU/memory usage per node (requires Metrics Server) |
+| `kubectl top pods`                   | Show CPU/memory usage per pod (requires Metrics Server)  |
+| `--sort-by=cpu` / `--sort-by=memory` | Sort `kubectl top` output                                |
 
 ### Useful Commands
 

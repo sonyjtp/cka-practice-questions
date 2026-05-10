@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 > ℹ️ **Scope Note:** The default kubeconfig is at `~/.kube/config`. You can specify a different file with `--kubeconfig=<path>` or the `KUBECONFIG` environment variable. On the CKA exam, you frequently switch between clusters using contexts.
 
 ---
@@ -360,14 +350,14 @@ kubectl config get-users
 
 Common kubeconfig issues:
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `no configuration provided` | Missing/empty kubeconfig | Copy admin.conf to ~/.kube/config |
-| `connection refused` | Wrong server URL or API server down | Verify server address; check API server |
-| `x509: certificate signed by unknown authority` | Wrong or missing CA cert | Update `certificate-authority-data` |
-| `current-context not set` | No default context | `kubectl config use-context <name>` |
-| `context not found` | Wrong context name | `kubectl config get-contexts` to list |
-| `Forbidden` | Wrong user or missing RBAC | Check user identity; add RoleBinding |
+| Error                                           | Cause                               | Fix                                     |
+|-------------------------------------------------|-------------------------------------|-----------------------------------------|
+| `no configuration provided`                     | Missing/empty kubeconfig            | Copy admin.conf to ~/.kube/config       |
+| `connection refused`                            | Wrong server URL or API server down | Verify server address; check API server |
+| `x509: certificate signed by unknown authority` | Wrong or missing CA cert            | Update `certificate-authority-data`     |
+| `current-context not set`                       | No default context                  | `kubectl config use-context <name>`     |
+| `context not found`                             | Wrong context name                  | `kubectl config get-contexts` to list   |
+| `Forbidden`                                     | Wrong user or missing RBAC          | Check user identity; add RoleBinding    |
 
 > **Key Concept:** `-v=6` or `-v=9` verbose flags show exactly which kubeconfig file is loaded, which context is active, and the full API request — invaluable for debugging. The most common exam scenario is that the kubeconfig has a wrong server address or the current-context is not set. Always start with `kubectl config view` and `kubectl config current-context`.
 

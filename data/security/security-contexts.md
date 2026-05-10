@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 ## 🟢 Easy Questions
 
 ---
@@ -175,14 +165,14 @@ capsh --decode=0000000000000400
 
 Common Linux capabilities:
 
-| Capability | Allows |
-|-----------|--------|
-| `NET_BIND_SERVICE` | Bind to ports < 1024 |
-| `SYS_PTRACE` | Debug/trace other processes |
-| `SYS_ADMIN` | Broad system administration (dangerous) |
-| `CHOWN` | Change file ownership |
-| `NET_ADMIN` | Network configuration |
-| `ALL` | All capabilities (privileged) |
+| Capability         | Allows                                  |
+|--------------------|-----------------------------------------|
+| `NET_BIND_SERVICE` | Bind to ports < 1024                    |
+| `SYS_PTRACE`       | Debug/trace other processes             |
+| `SYS_ADMIN`        | Broad system administration (dangerous) |
+| `CHOWN`            | Change file ownership                   |
+| `NET_ADMIN`        | Network configuration                   |
+| `ALL`              | All capabilities (privileged)           |
 
 > **Key Concept:** Linux capabilities break root's all-or-nothing privilege model into fine-grained units. Best practice is `drop: [ALL]` then `add` back only the specific capabilities the application needs. `SYS_ADMIN` is essentially root — avoid it. Container runtimes grant a default set of capabilities; `drop: ALL` removes even those defaults.
 
@@ -294,14 +284,14 @@ kubectl exec privileged-pod -- modprobe nf_conntrack
 # (succeeds)
 ```
 
-| | Non-Privileged | Privileged |
-|--|---------------|-----------|
-| Host devices | ❌ No | ✅ Full access |
-| Kernel modules | ❌ No | ✅ Yes |
-| Mount filesystems | ❌ No | ✅ Yes |
-| All capabilities | ❌ Default set only | ✅ ALL |
-| Use case | Applications | Node agents, network plugins, debugging |
-| Security risk | Low | Very High |
+|                   | Non-Privileged     | Privileged                              |
+|-------------------|--------------------|-----------------------------------------|
+| Host devices      | ❌ No               | ✅ Full access                           |
+| Kernel modules    | ❌ No               | ✅ Yes                                   |
+| Mount filesystems | ❌ No               | ✅ Yes                                   |
+| All capabilities  | ❌ Default set only | ✅ ALL                                   |
+| Use case          | Applications       | Node agents, network plugins, debugging |
+| Security risk     | Low                | Very High                               |
 
 > **Key Concept:** A privileged container is essentially root on the **host node** — it bypasses all container isolation. Never use `privileged: true` in application workloads. It is only justified for system-level tools (node exporters, CNI plugins, debugging). In the CKA exam, if you see `privileged: true` in a workload, treat it as a misconfiguration.
 
@@ -461,15 +451,15 @@ securityContext:
 
 ### Security Hardening Checklist
 
-| Setting | Recommended Value | Reason |
-|---------|------------------|--------|
-| `runAsNonRoot` | `true` | Prevent root container |
-| `runAsUser` | non-zero | Explicit non-root UID |
-| `allowPrivilegeEscalation` | `false` | Block sudo/setuid |
-| `readOnlyRootFilesystem` | `true` | Prevent filesystem writes |
-| `capabilities.drop` | `[ALL]` | Least privilege |
-| `privileged` | `false` (default) | No host access |
-| `seccompProfile.type` | `RuntimeDefault` | Restrict syscalls |
+| Setting                    | Recommended Value | Reason                    |
+|----------------------------|-------------------|---------------------------|
+| `runAsNonRoot`             | `true`            | Prevent root container    |
+| `runAsUser`                | non-zero          | Explicit non-root UID     |
+| `allowPrivilegeEscalation` | `false`           | Block sudo/setuid         |
+| `readOnlyRootFilesystem`   | `true`            | Prevent filesystem writes |
+| `capabilities.drop`        | `[ALL]`           | Least privilege           |
+| `privileged`               | `false` (default) | No host access            |
+| `seccompProfile.type`      | `RuntimeDefault`  | Restrict syscalls         |
 
 ### Useful Commands
 

@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 ## 🟢 Easy Questions
 
 ---
@@ -326,13 +316,13 @@ dmesg | tail -50
 
 NotReady diagnosis table:
 
-| Condition | Cause | Fix |
-|-----------|-------|-----|
-| **DiskPressure** | Disk full | Free disk space, increase node storage |
-| **MemoryPressure** | Memory low | Free memory, scale pods down |
-| **Ready=False** | Kubelet not responding | Restart kubelet, check connectivity |
-| **CordonSchedulingDisabled** | Node cordoned | `kubectl uncordon <node>` |
-| **NetworkUnavailable** | CNI not ready | Install/restart CNI plugin |
+| Condition                    | Cause                  | Fix                                    |
+|------------------------------|------------------------|----------------------------------------|
+| **DiskPressure**             | Disk full              | Free disk space, increase node storage |
+| **MemoryPressure**           | Memory low             | Free memory, scale pods down           |
+| **Ready=False**              | Kubelet not responding | Restart kubelet, check connectivity    |
+| **CordonSchedulingDisabled** | Node cordoned          | `kubectl uncordon <node>`              |
+| **NetworkUnavailable**       | CNI not ready          | Install/restart CNI plugin             |
 
 > **Key Concept:** NotReady indicates kubelet not reporting readiness. Check kubelet logs on the node, verify container runtime, CNI, and system resources.
 
@@ -491,13 +481,13 @@ journalctl -u kubelet | grep mystery-pod | grep -i "successfully\|started"
 
 Multi-log correlation table:
 
-| Component | What It Shows | When to Check |
-|-----------|--------------|---------------|
-| **kubectl get events** | User-visible pod events (Scheduled, Pulled, Started, Failed) | First - high-level overview |
-| **kubectl describe pod** | Events + object spec (what was requested) | After events, to see config |
-| **kubelet logs** | Container runtime details, actual errors (image pull, startup) | When events don't explain why |
-| **API audit logs** | Who/what/when of API requests, response codes | For security, permission issues |
-| **System logs (dmesg)** | Hardware errors, kernel OOM, network issues | For system-level problems |
+| Component                | What It Shows                                                  | When to Check                   |
+|--------------------------|----------------------------------------------------------------|---------------------------------|
+| **kubectl get events**   | User-visible pod events (Scheduled, Pulled, Started, Failed)   | First - high-level overview     |
+| **kubectl describe pod** | Events + object spec (what was requested)                      | After events, to see config     |
+| **kubelet logs**         | Container runtime details, actual errors (image pull, startup) | When events don't explain why   |
+| **API audit logs**       | Who/what/when of API requests, response codes                  | For security, permission issues |
+| **System logs (dmesg)**  | Hardware errors, kernel OOM, network issues                    | For system-level problems       |
 
 Diagnosis workflow:
 

@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 > ℹ️ **Scope Note:** The CKA tests CSI at the **usage level** — understanding what CSI is, how to use CSI-backed StorageClasses, and how dynamic provisioning works through a CSI driver. You are **not** expected to install, develop, or debug CSI drivers themselves.
 
 ---
@@ -160,9 +150,9 @@ kubectl describe storageclass csi-sc
 
 `volumeBindingMode` options:
 
-| Mode | Behaviour |
-|------|-----------|
-| `Immediate` | PV provisioned as soon as PVC is created |
+| Mode                   | Behaviour                                                                                 |
+|------------------------|-------------------------------------------------------------------------------------------|
+| `Immediate`            | PV provisioned as soon as PVC is created                                                  |
 | `WaitForFirstConsumer` | PV provisioned only when a Pod using the PVC is scheduled — respects topology constraints |
 
 > **Key Concept:** `WaitForFirstConsumer` is the recommended binding mode for CSI drivers in multi-zone clusters — it ensures the volume is created in the same zone as the Pod. `Immediate` can cause scheduling failures if the volume is provisioned in a different zone than where the Pod ends up. The `parameters` block is driver-specific — refer to the driver's documentation for supported keys.
@@ -361,13 +351,13 @@ kubectl get node <node-name> --show-labels | grep topology
 
 Common CSI failure causes and fixes:
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| PVC stuck `Pending` | CSI controller pod not running | Check/restart CSI controller pods |
-| `driver not found` | Node plugin not running on target node | Check CSI node DaemonSet pods |
-| `volume attachment timeout` | Cloud API unreachable / IAM permissions | Check cloud credentials/IAM role |
-| `StorageClass not found` | Wrong `storageClassName` in PVC | Fix PVC to reference correct SC |
-| `WaitForFirstConsumer` PVC pending | No Pod using the PVC yet | Normal — create a Pod using the PVC |
+| Symptom                            | Cause                                   | Fix                                 |
+|------------------------------------|-----------------------------------------|-------------------------------------|
+| PVC stuck `Pending`                | CSI controller pod not running          | Check/restart CSI controller pods   |
+| `driver not found`                 | Node plugin not running on target node  | Check CSI node DaemonSet pods       |
+| `volume attachment timeout`        | Cloud API unreachable / IAM permissions | Check cloud credentials/IAM role    |
+| `StorageClass not found`           | Wrong `storageClassName` in PVC         | Fix PVC to reference correct SC     |
+| `WaitForFirstConsumer` PVC pending | No Pod using the PVC yet                | Normal — create a Pod using the PVC |
 
 > **Key Concept:** CSI drivers have two components: a **controller plugin** (runs as a Deployment — handles volume creation/deletion/attachment) and a **node plugin** (runs as a DaemonSet — handles volume mounting on each node). When troubleshooting, check both. A missing controller means volumes can't be provisioned; a missing node plugin means volumes can't be mounted on that node.
 
@@ -408,22 +398,22 @@ parameters:
 
 ### CSI Driver Components
 
-| Component | Type | Responsibility |
-|-----------|------|----------------|
-| CSI Controller Plugin | Deployment | Create, delete, attach, snapshot volumes |
-| CSI Node Plugin | DaemonSet | Mount/unmount volumes on nodes |
-| External Provisioner | Sidecar | Watches PVCs, calls CSI CreateVolume |
-| External Attacher | Sidecar | Watches VolumeAttachments, calls CSI ControllerPublish |
+| Component             | Type       | Responsibility                                         |
+|-----------------------|------------|--------------------------------------------------------|
+| CSI Controller Plugin | Deployment | Create, delete, attach, snapshot volumes               |
+| CSI Node Plugin       | DaemonSet  | Mount/unmount volumes on nodes                         |
+| External Provisioner  | Sidecar    | Watches PVCs, calls CSI CreateVolume                   |
+| External Attacher     | Sidecar    | Watches VolumeAttachments, calls CSI ControllerPublish |
 
 ### Common CSI Provisioner Names
 
-| Cloud / Storage | Provisioner Name |
-|----------------|-----------------|
-| AWS EBS | `ebs.csi.aws.com` |
-| GCE Persistent Disk | `pd.csi.storage.gke.io` |
-| Azure Disk | `disk.csi.azure.com` |
-| Azure File | `file.csi.azure.com` |
-| NFS | `nfs.csi.k8s.io` |
+| Cloud / Storage      | Provisioner Name        |
+|----------------------|-------------------------|
+| AWS EBS              | `ebs.csi.aws.com`       |
+| GCE Persistent Disk  | `pd.csi.storage.gke.io` |
+| Azure Disk           | `disk.csi.azure.com`    |
+| Azure File           | `file.csi.azure.com`    |
+| NFS                  | `nfs.csi.k8s.io`        |
 | Local path (Rancher) | `rancher.io/local-path` |
 
 ### Related Topics

@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 8–10 minutes    |
-| 🔴 Hard    | 10–12 minutes   |
-
----
-
 ## 🟢 Easy Questions
 
 ---
@@ -340,13 +330,13 @@ ETCDCTL_API=3 etcdctl \
 
 ### Encryption Providers
 
-| Provider | Key Size | Notes |
-|----------|----------|-------|
-| `aescbc` | 16, 24, or 32 bytes | Recommended; CBC mode with PKCS#7 padding |
-| `aesgcm` | 16, 24, or 32 bytes | GCM mode; faster but keys should be rotated more frequently |
-| `secretbox` | 32 bytes | XSalsa20 + Poly1305 |
-| `kms` | N/A (envelope encryption) | Delegates to external KMS (e.g., AWS KMS, Vault) |
-| `identity` | None | No encryption — stores plain base64 |
+| Provider    | Key Size                  | Notes                                                       |
+|-------------|---------------------------|-------------------------------------------------------------|
+| `aescbc`    | 16, 24, or 32 bytes       | Recommended; CBC mode with PKCS#7 padding                   |
+| `aesgcm`    | 16, 24, or 32 bytes       | GCM mode; faster but keys should be rotated more frequently |
+| `secretbox` | 32 bytes                  | XSalsa20 + Poly1305                                         |
+| `kms`       | N/A (envelope encryption) | Delegates to external KMS (e.g., AWS KMS, Vault)            |
+| `identity`  | None                      | No encryption — stores plain base64                         |
 
 ### Provider Order Rules
 

@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 ## 🟢 Easy Questions
 
 ---
@@ -289,15 +279,15 @@ kubectl auth can-i create deployments --as=dev-user -n production
 
 Common API groups:
 
-| Resource | API Group |
-|----------|-----------|
-| pods, services, configmaps, secrets, nodes | `""` (core) |
-| deployments, replicasets, statefulsets, daemonsets | `"apps"` |
-| ingresses | `"networking.k8s.io"` |
-| cronjobs, jobs | `"batch"` |
-| horizontalpodautoscalers | `"autoscaling"` |
-| roles, rolebindings | `"rbac.authorization.k8s.io"` |
-| networkpolicies | `"networking.k8s.io"` |
+| Resource                                           | API Group                     |
+|----------------------------------------------------|-------------------------------|
+| pods, services, configmaps, secrets, nodes         | `""` (core)                   |
+| deployments, replicasets, statefulsets, daemonsets | `"apps"`                      |
+| ingresses                                          | `"networking.k8s.io"`         |
+| cronjobs, jobs                                     | `"batch"`                     |
+| horizontalpodautoscalers                           | `"autoscaling"`               |
+| roles, rolebindings                                | `"rbac.authorization.k8s.io"` |
+| networkpolicies                                    | `"networking.k8s.io"`         |
 
 > **Key Concept:** The `apiGroups` field must match the resource's API group — getting this wrong is a common exam mistake. To find the correct API group for any resource: `kubectl api-resources | grep deployments`. The `APIVERSION` column shows `apps/v1` — the group is everything before the `/`, which is `apps`.
 
@@ -557,12 +547,12 @@ kubectl auth can-i list configmaps \
 
 ### Role vs ClusterRole vs Bindings
 
-| Resource | Scope | Use For |
-|----------|-------|---------|
-| `Role` | Namespace | Permissions within one namespace |
-| `ClusterRole` | Cluster | Cluster-scoped resources + cross-namespace reuse |
-| `RoleBinding` | Namespace | Grants Role or ClusterRole within one namespace |
-| `ClusterRoleBinding` | Cluster | Grants ClusterRole across all namespaces |
+| Resource             | Scope     | Use For                                          |
+|----------------------|-----------|--------------------------------------------------|
+| `Role`               | Namespace | Permissions within one namespace                 |
+| `ClusterRole`        | Cluster   | Cluster-scoped resources + cross-namespace reuse |
+| `RoleBinding`        | Namespace | Grants Role or ClusterRole within one namespace  |
+| `ClusterRoleBinding` | Cluster   | Grants ClusterRole across all namespaces         |
 
 ### Subject Types
 
@@ -583,16 +573,16 @@ subjects:
 
 ### Common Verbs
 
-| Verb | HTTP | Description |
-|------|------|-------------|
-| `get` | GET | Read a single resource |
-| `list` | GET | List all resources |
-| `watch` | GET | Stream changes |
-| `create` | POST | Create a resource |
-| `update` | PUT | Replace a resource |
-| `patch` | PATCH | Partially update |
-| `delete` | DELETE | Delete a resource |
-| `deletecollection` | DELETE | Delete multiple |
+| Verb               | HTTP   | Description            |
+|--------------------|--------|------------------------|
+| `get`              | GET    | Read a single resource |
+| `list`             | GET    | List all resources     |
+| `watch`            | GET    | Stream changes         |
+| `create`           | POST   | Create a resource      |
+| `update`           | PUT    | Replace a resource     |
+| `patch`            | PATCH  | Partially update       |
+| `delete`           | DELETE | Delete a resource      |
+| `deletecollection` | DELETE | Delete multiple        |
 
 ### Useful Commands
 

@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 ## 🟢 Easy Questions
 
 ---
@@ -179,11 +169,11 @@ spec:
 
 `imagePullPolicy` values:
 
-| Value | Behaviour | Default When |
-|-------|-----------|-------------|
-| `Always` | Always pull from registry | Tag is `latest` or not specified |
+| Value          | Behaviour                       | Default When                     |
+|----------------|---------------------------------|----------------------------------|
+| `Always`       | Always pull from registry       | Tag is `latest` or not specified |
 | `IfNotPresent` | Pull only if not cached on node | Tag is specific (e.g., `v1.2.3`) |
-| `Never` | Never pull — must exist on node | Manual/airgapped environments |
+| `Never`        | Never pull — must exist on node | Manual/airgapped environments    |
 
 ```bash
 kubectl apply -f always-pull-pod.yaml
@@ -273,13 +263,13 @@ kubectl get pod <pod-name> --watch
 
 Root cause table:
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `unauthorized` | No/wrong pull secret | Create/fix `imagePullSecrets` |
-| `not found` / `manifest unknown` | Wrong image name or tag | Correct `image` field |
-| `context deadline exceeded` | Network can't reach registry | Fix DNS/firewall/proxy |
-| `toomanyrequests` | Docker Hub rate limit | Use authenticated pull secret or mirror |
-| `ImagePullBackOff` (generic) | Repeated failures, backing off | Check events for root cause |
+| Error                            | Cause                          | Fix                                     |
+|----------------------------------|--------------------------------|-----------------------------------------|
+| `unauthorized`                   | No/wrong pull secret           | Create/fix `imagePullSecrets`           |
+| `not found` / `manifest unknown` | Wrong image name or tag        | Correct `image` field                   |
+| `context deadline exceeded`      | Network can't reach registry   | Fix DNS/firewall/proxy                  |
+| `toomanyrequests`                | Docker Hub rate limit          | Use authenticated pull secret or mirror |
+| `ImagePullBackOff` (generic)     | Repeated failures, backing off | Check events for root cause             |
 
 > **Key Concept:** `ErrImagePull` is the initial failure; `ImagePullBackOff` means Kubernetes is retrying with exponential backoff. Always check `kubectl describe pod` Events for the actual error — the `ImagePullBackOff` status itself doesn't tell you why. The most common causes are: wrong image tag, missing pull secret, and wrong credentials in the pull secret.
 
@@ -347,13 +337,13 @@ EOF
 
 Image security layers:
 
-| Layer | Mechanism | Enforces |
-|-------|-----------|---------|
-| Pull authentication | `imagePullSecrets` | Only authorised registries |
-| Image scanning | External tools (Trivy, Snyk) | No vulnerable images |
-| Admission control | `ImagePolicyWebhook`, OPA | Approved images/registries only |
-| Pod Security Admission | Namespace labels | No privileged/root containers |
-| Runtime security | `securityContext` | OS-level restrictions |
+| Layer                  | Mechanism                    | Enforces                        |
+|------------------------|------------------------------|---------------------------------|
+| Pull authentication    | `imagePullSecrets`           | Only authorised registries      |
+| Image scanning         | External tools (Trivy, Snyk) | No vulnerable images            |
+| Admission control      | `ImagePolicyWebhook`, OPA    | Approved images/registries only |
+| Pod Security Admission | Namespace labels             | No privileged/root containers   |
+| Runtime security       | `securityContext`            | OS-level restrictions           |
 
 > **Key Concept:** For the CKA, the most testable image security topics are: creating `imagePullSecrets`, attaching them to pods/ServiceAccounts, and troubleshooting `ImagePullBackOff`. Pod Security Admission (replacing Pod Security Policy in Kubernetes 1.25+) is also tested — it uses namespace labels to enforce security standards (`privileged`, `baseline`, `restricted`) across all pods in a namespace.
 

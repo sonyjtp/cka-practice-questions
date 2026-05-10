@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 ## 🟢 Easy Questions
 
 ---
@@ -80,12 +70,12 @@ evictionHard:
 
 Common locations:
 
-| Location | Notes |
-|----------|-------|
-| `/var/lib/kubelet/config.yaml` | Main config file |
-| `/var/lib/kubelet/kubeconfig` | Authentication to API server |
-| `/etc/kubernetes/kubelet-env` | Environment variables |
-| `/etc/systemd/system/kubelet.service.d/` | Systemd overrides |
+| Location                                 | Notes                        |
+|------------------------------------------|------------------------------|
+| `/var/lib/kubelet/config.yaml`           | Main config file             |
+| `/var/lib/kubelet/kubeconfig`            | Authentication to API server |
+| `/etc/kubernetes/kubelet-env`            | Environment variables        |
+| `/etc/systemd/system/kubelet.service.d/` | Systemd overrides            |
 
 > **Key Concept:** Kubelet configuration controls node-level behavior: container runtime, logging, resource reservation, eviction policies. Config file is YAML-based and typically located at `/var/lib/kubelet/config.yaml`.
 
@@ -486,11 +476,11 @@ done
 
 Drain vs Cordon:
 
-| Command | Action | Pods Removed |
-|---------|--------|--------------|
-| `cordon` | Mark unschedulable | No (existing pods stay) |
-| `drain` | Evict pods + cordon | Yes (pods moved/deleted) |
-| `uncordon` | Mark schedulable | No effect |
+| Command    | Action              | Pods Removed             |
+|------------|---------------------|--------------------------|
+| `cordon`   | Mark unschedulable  | No (existing pods stay)  |
+| `drain`    | Evict pods + cordon | Yes (pods moved/deleted) |
+| `uncordon` | Mark schedulable    | No effect                |
 
 Common drain scenarios:
 

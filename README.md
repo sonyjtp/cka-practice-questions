@@ -1,11 +1,11 @@
 # ☸️ CKA Practice Questions & Exam Simulator
 
-> **Free, open-source Certified Kubernetes Administrator (CKA) practice exam simulator** — 337+ randomized questions, a 2-hour countdown timer with pause/resume, weighted difficulty scoring, self-assessment modes, and comprehensive troubleshooting scenarios matching the real CKA exam.
+> **Free, open-source Certified Kubernetes Administrator (CKA) practice exam simulator** — 340+ randomized questions, a 2-hour countdown timer with pause/resume, weighted difficulty scoring, self-assessment modes, and comprehensive troubleshooting scenarios matching the real CKA exam.
 
 [![License: Study Use](https://img.shields.io/badge/license-study--use-blue)](#-license)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue?logo=python)](https://www.python.org/)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-CKA-326CE5?logo=kubernetes&logoColor=white)](https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/)
-[![Questions](https://img.shields.io/badge/questions-337%2B-green)](#-question-bank)
+[![Questions](https://img.shields.io/badge/questions-340%2B-green)](#-question-bank)
 [![CNCF](https://img.shields.io/badge/CNCF-Certified-blueviolet)](https://www.cncf.io/)
 
 ---
@@ -15,7 +15,7 @@
 This project is a **comprehensive CKA mock exam simulator** designed for engineers preparing for the [Certified Kubernetes Administrator (CKA)](https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/) exam by the CNCF / Linux Foundation.
 
 It provides:
-- **337+ hands-on CKA practice questions** organized by exam domain with progressive difficulty
+- **340+ hands-on CKA practice questions** organized by exam domain with progressive difficulty
 - A realistic **web-based exam simulator** with 2-hour countdown timer, pause/resume, and question palette
 - **Weighted scoring system** (Easy: 5 pts, Medium: 10 pts, Hard: 15 pts) matching real CKA distribution
 - **Flexible assessment modes** — evaluate after exam or during exam for learning
@@ -109,9 +109,9 @@ Each domain includes a brief description to help you quickly understand the cove
 ## 📊 Scoring System
 
 **Weighted by Difficulty:**
-- 🟢 **Easy**: 5 points each
-- 🟡 **Medium**: 10 points each
-- 🔴 **Hard**: 15 points each
+- 🟢 **Easy**: 5 points each | ⏱️ **4–6 minutes**
+- 🟡 **Medium**: 10 points each | ⏱️ **6–8 minutes**
+- 🔴 **Hard**: 15 points each | ⏱️ **8–10 minutes**
 
 **Score Calculation:**
 ```
@@ -249,12 +249,12 @@ Answer content with code blocks, explanations, etc.
 
 ## 🔍 Question Coverage (CKA Exam Domains)
 
-**Total: 337+ Practice Questions**
+**Total: 340+ Practice Questions**
 
 ### By Domain:
 
 - **Cluster Architecture, Installation & Configuration** (84 questions) — kubeadm, etcd backup & restore, RBAC, admission controllers, certificates, security contexts, image security, kustomize, helm
-- **Workloads & Scheduling** (116 questions) — Deployments, DaemonSets, StatefulSets, init containers, resource limits, taints/tolerations, node affinity, priority classes
+- **Workloads & Scheduling** (119 questions) — Deployments, DaemonSets, StatefulSets, init containers, resource limits, taints/tolerations, node affinity, priority classes, Custom Resource Definitions (CRDs)
 - **Services & Networking** (59 questions) — Services, Ingress, NetworkPolicy, CoreDNS, CNI plugins, kube-proxy, service networking
 - **Storage** (21 questions) — PersistentVolumes, PersistentVolumeClaims, StorageClasses, CSI, volume mounts
 - **Logging & Monitoring** (20 questions) — Cluster logging, application logging, metrics, observability

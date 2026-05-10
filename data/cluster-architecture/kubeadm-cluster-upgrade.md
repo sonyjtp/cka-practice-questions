@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 8–10 minutes    |
-| 🔴 Hard    | 12–15 minutes   |
-
----
-
 > ℹ️ **Scope Note:** The CKA exam tests upgrading a cluster using `kubeadm`. You are expected to upgrade **one minor version at a time** (e.g., 1.29 → 1.30). Skipping versions is not supported. The upgrade order is always: **control plane first, then worker nodes**.
 
 ---
@@ -97,13 +87,13 @@ kubectl get node worker-01
 
 Drain flags reference:
 
-| Flag | Purpose |
-|------|---------|
-| `--ignore-daemonsets` | Skip DaemonSet pods (always required) |
-| `--delete-emptydir-data` | Evict pods with emptyDir (data will be lost) |
-| `--force` | Evict unmanaged pods (not backed by a controller) |
-| `--grace-period=0` | Skip graceful termination (use carefully) |
-| `--timeout=60s` | Fail if drain doesn't complete in time |
+| Flag                     | Purpose                                           |
+|--------------------------|---------------------------------------------------|
+| `--ignore-daemonsets`    | Skip DaemonSet pods (always required)             |
+| `--delete-emptydir-data` | Evict pods with emptyDir (data will be lost)      |
+| `--force`                | Evict unmanaged pods (not backed by a controller) |
+| `--grace-period=0`       | Skip graceful termination (use carefully)         |
+| `--timeout=60s`          | Fail if drain doesn't complete in time            |
 
 > **Key Concept:** `kubectl drain` = `kubectl cordon` (mark unschedulable) + evict all pods. DaemonSet pods cannot be evicted (they're tied to the node) — `--ignore-daemonsets` is always needed. After the upgrade, **always uncordon** the node or it will remain unschedulable permanently.
 
@@ -249,11 +239,11 @@ kubectl get nodes
 
 Control plane vs worker node upgrade commands:
 
-| Step | Control Plane | Worker Node |
-|------|--------------|------------|
-| kubeadm command | `kubeadm upgrade apply v1.30.0` | `kubeadm upgrade node` |
-| Drains itself? | Manual drain needed | Manual drain from control plane |
-| What it upgrades | Static pod manifests + configs | Kubelet config only |
+| Step             | Control Plane                   | Worker Node                     |
+|------------------|---------------------------------|---------------------------------|
+| kubeadm command  | `kubeadm upgrade apply v1.30.0` | `kubeadm upgrade node`          |
+| Drains itself?   | Manual drain needed             | Manual drain from control plane |
+| What it upgrades | Static pod manifests + configs  | Kubelet config only             |
 
 > **Key Concept:** Worker nodes use `kubeadm upgrade node` (not `upgrade apply`). This command updates the local kubelet configuration to match the new version. You must drain the worker **from the control plane** before SSHing into it — you cannot drain a node from itself (the API server is on the control plane).
 
@@ -431,13 +421,13 @@ kubeadm upgrade apply v1.30.0
 
 Common failure causes:
 
-| Failure | Symptom | Fix |
-|---------|---------|-----|
-| Image pull failed | `ImagePullBackOff` on apiserver pod | Pre-pull image: `crictl pull <image>` |
-| Bad manifest | `CrashLoopBackOff`, kubelet errors | Restore from `/etc/kubernetes/tmp/` backup |
-| etcd unavailable | `upgrade apply` hangs/fails at etcd | Check etcd pod: `kubectl get pod -n kube-system etcd-*` |
-| Version skew | `kubeadm` version doesn't match target | Reinstall correct kubeadm version |
-| Disk full | kubelet can't write manifest | Free disk space on control plane node |
+| Failure           | Symptom                                | Fix                                                     |
+|-------------------|----------------------------------------|---------------------------------------------------------|
+| Image pull failed | `ImagePullBackOff` on apiserver pod    | Pre-pull image: `crictl pull <image>`                   |
+| Bad manifest      | `CrashLoopBackOff`, kubelet errors     | Restore from `/etc/kubernetes/tmp/` backup              |
+| etcd unavailable  | `upgrade apply` hangs/fails at etcd    | Check etcd pod: `kubectl get pod -n kube-system etcd-*` |
+| Version skew      | `kubeadm` version doesn't match target | Reinstall correct kubeadm version                       |
+| Disk full         | kubelet can't write manifest           | Free disk space on control plane node                   |
 
 > **Key Concept:** `kubeadm upgrade apply` saves backup manifests in `/etc/kubernetes/tmp/kubeadm-backup-manifests-<timestamp>/` before making changes. This is your recovery path if something goes wrong. Static pod manifests live in `/etc/kubernetes/manifests/` — kubelet watches this directory and automatically starts/stops pods when files change. If the API server is down, use `crictl` to inspect containers directly on the node.
 

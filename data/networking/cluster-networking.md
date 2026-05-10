@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 > ℹ️ **Scope Note:** CKA tests understanding of Kubernetes networking requirements, how nodes communicate, port requirements for cluster components, and troubleshooting node-level connectivity.
 
 ---
@@ -34,12 +24,12 @@ List the fundamental networking requirements that every Kubernetes cluster must 
 
 Kubernetes imposes these non-negotiable networking rules:
 
-| Rule | Meaning |
-|------|---------|
-| Pod-to-pod (same node) | No NAT — direct communication |
-| Pod-to-pod (cross-node) | No NAT — pods use real IPs |
-| Node-to-pod | No NAT — nodes reach pods directly |
-| Pod sees its own IP | Pod's IP as seen inside = IP as seen outside |
+| Rule                    | Meaning                                      |
+|-------------------------|----------------------------------------------|
+| Pod-to-pod (same node)  | No NAT — direct communication                |
+| Pod-to-pod (cross-node) | No NAT — pods use real IPs                   |
+| Node-to-pod             | No NAT — nodes reach pods directly           |
+| Pod sees its own IP     | Pod's IP as seen inside = IP as seen outside |
 
 ```bash
 # Verify pod IPs are routable from nodes
@@ -78,21 +68,21 @@ List the ports that must be open on control plane and worker nodes for the clust
 
 **Control Plane node ports:**
 
-| Port | Protocol | Component | Used By |
-|------|----------|-----------|---------|
-| 6443 | TCP | kube-apiserver | All |
-| 2379–2380 | TCP | etcd | kube-apiserver, etcd peers |
-| 10250 | TCP | kubelet API | kube-apiserver, kubectl exec/logs |
-| 10259 | TCP | kube-scheduler | self |
-| 10257 | TCP | kube-controller-manager | self |
+| Port      | Protocol | Component               | Used By                           |
+|-----------|----------|-------------------------|-----------------------------------|
+| 6443      | TCP      | kube-apiserver          | All                               |
+| 2379–2380 | TCP      | etcd                    | kube-apiserver, etcd peers        |
+| 10250     | TCP      | kubelet API             | kube-apiserver, kubectl exec/logs |
+| 10259     | TCP      | kube-scheduler          | self                              |
+| 10257     | TCP      | kube-controller-manager | self                              |
 
 **Worker node ports:**
 
-| Port | Protocol | Component | Used By |
-|------|----------|-----------|---------|
-| 10250 | TCP | kubelet API | kube-apiserver |
-| 10256 | TCP | kube-proxy health | load balancers |
-| 30000–32767 | TCP/UDP | NodePort Services | external clients |
+| Port        | Protocol | Component         | Used By          |
+|-------------|----------|-------------------|------------------|
+| 10250       | TCP      | kubelet API       | kube-apiserver   |
+| 10256       | TCP      | kube-proxy health | load balancers   |
+| 30000–32767 | TCP/UDP  | NodePort Services | external clients |
 
 ```bash
 # Verify ports are open on control plane
@@ -297,12 +287,12 @@ kubectl logs -n kube-system -l k8s-app=kube-proxy | grep "Using"
 ipvsadm -ln | head -20
 ```
 
-| Feature | iptables | IPVS |
-|---------|----------|------|
-| Lookup | Sequential rules scan | Hash table O(1) |
-| Scale | Degrades with 1000s of services | Handles 10000s of services |
-| Load balancing algorithms | Round-robin only | rr, wrr, lc, sh, sed, nq |
-| Kernel module | Built-in | Requires `ip_vs_*` modules |
+| Feature                   | iptables                        | IPVS                       |
+|---------------------------|---------------------------------|----------------------------|
+| Lookup                    | Sequential rules scan           | Hash table O(1)            |
+| Scale                     | Degrades with 1000s of services | Handles 10000s of services |
+| Load balancing algorithms | Round-robin only                | rr, wrr, lc, sh, sed, nq   |
+| Kernel module             | Built-in                        | Requires `ip_vs_*` modules |
 
 > **Key Concept:** Both kube-proxy modes implement Service VIPs (ClusterIPs) by intercepting traffic destined for Service IPs and rewriting it to actual pod IPs. **iptables** mode uses `DNAT` rules — works fine up to ~1000 services. **IPVS** mode uses kernel-level virtual server hashing — better performance and more load balancing algorithms. Most production clusters use IPVS or Cilium's eBPF (which replaces kube-proxy entirely).
 
@@ -370,12 +360,12 @@ kubectl get nodes
 
 `NetworkUnavailable` causes:
 
-| Message | Cause | Fix |
-|---------|-------|-----|
-| `CNI plugin not initialized` | No CNI config in `/etc/cni/net.d/` | Reinstall/restart CNI DaemonSet |
-| `flannel not in path` | CNI binary missing from `/opt/cni/bin/` | Reinstall CNI |
-| `does not ensure ip masq` | CNI misconfiguration | Check CNI pod logs, reapply manifest |
-| After node reboot | CNI pod not yet started | Wait ~60s for DaemonSet pod to initialize |
+| Message                      | Cause                                   | Fix                                       |
+|------------------------------|-----------------------------------------|-------------------------------------------|
+| `CNI plugin not initialized` | No CNI config in `/etc/cni/net.d/`      | Reinstall/restart CNI DaemonSet           |
+| `flannel not in path`        | CNI binary missing from `/opt/cni/bin/` | Reinstall CNI                             |
+| `does not ensure ip masq`    | CNI misconfiguration                    | Check CNI pod logs, reapply manifest      |
+| After node reboot            | CNI pod not yet started                 | Wait ~60s for DaemonSet pod to initialize |
 
 > **Key Concept:** `NetworkUnavailable=True` is set by the CNI plugin itself (via the Node API) to signal it hasn't finished configuring the node's network. It's **not** set by kubelet — the CNI plugin's node agent sets it to `False` once setup completes. This condition means the CNI DaemonSet pod on that node has not successfully run. Always start debugging by checking the CNI pod on the affected node.
 

@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 > ℹ️ **Scope Note:** CKA expects you to understand how pod networking works under the hood — network namespaces, veth pairs, bridges — and be able to troubleshoot pod connectivity issues. You won't need to set up the full network stack manually, but you must understand it.
 
 ---

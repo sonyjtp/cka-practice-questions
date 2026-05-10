@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 > ℹ️ **Scope Note:** Services are one of the most heavily tested CKA topics. You must know all Service types, how kube-proxy implements ClusterIP using iptables/IPVS, how Endpoints work, and how to troubleshoot broken service connectivity.
 
 ---

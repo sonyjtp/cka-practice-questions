@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 > ℹ️ **Scope Note:** CKA tests understanding of CNI concepts, where CNI plugins are installed, and troubleshooting pod networking failures caused by CNI misconfigurations. You are not expected to install CNI from scratch but must know how it works.
 
 ---
@@ -305,16 +295,16 @@ EOF
 
 Key fields explained:
 
-| Field | Value | Purpose |
-|-------|-------|---------|
-| `cniVersion` | `0.3.1` | CNI spec version |
-| `type` | `bridge` | CNI plugin binary to call (`/opt/cni/bin/bridge`) |
-| `bridge` | `cni0` | Linux bridge to create/use |
-| `isGateway` | `true` | Assign IP to bridge (used as pod gateway) |
-| `ipMasq` | `true` | NAT outbound traffic leaving the node |
-| `ipam.type` | `host-local` | Use host-local IPAM plugin |
-| `ipam.subnet` | `10.244.1.0/24` | IP range for this node's pods |
-| `ipam.routes` | `0.0.0.0/0` | Default route added inside pod |
+| Field         | Value           | Purpose                                           |
+|---------------|-----------------|---------------------------------------------------|
+| `cniVersion`  | `0.3.1`         | CNI spec version                                  |
+| `type`        | `bridge`        | CNI plugin binary to call (`/opt/cni/bin/bridge`) |
+| `bridge`      | `cni0`          | Linux bridge to create/use                        |
+| `isGateway`   | `true`          | Assign IP to bridge (used as pod gateway)         |
+| `ipMasq`      | `true`          | NAT outbound traffic leaving the node             |
+| `ipam.type`   | `host-local`    | Use host-local IPAM plugin                        |
+| `ipam.subnet` | `10.244.1.0/24` | IP range for this node's pods                     |
+| `ipam.routes` | `0.0.0.0/0`     | Default route added inside pod                    |
 
 ```bash
 # Verify the bridge is created after a pod starts

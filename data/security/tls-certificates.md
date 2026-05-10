@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 > ℹ️ **Scope Note:** Kubernetes uses TLS everywhere — between components, and for user/client authentication. The CA (Certificate Authority) lives at `/etc/kubernetes/pki/ca.crt` and `/etc/kubernetes/pki/ca.key`. The Certificates API allows you to request and approve certificates using Kubernetes itself.
 
 ---
@@ -56,14 +46,14 @@ openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text -noout | grep -E "Subje
 
 Certificate roles:
 
-| Certificate | Type | Used By |
-|-------------|------|---------|
-| `apiserver.crt` | Server | Clients connecting to API server |
-| `apiserver-kubelet-client.crt` | Client | API server → kubelet |
-| `apiserver-etcd-client.crt` | Client | API server → etcd |
-| `etcd/server.crt` | Server | etcd clients |
-| `etcd/peer.crt` | Both | etcd peer-to-peer |
-| `front-proxy-client.crt` | Client | Aggregated API servers |
+| Certificate                    | Type   | Used By                          |
+|--------------------------------|--------|----------------------------------|
+| `apiserver.crt`                | Server | Clients connecting to API server |
+| `apiserver-kubelet-client.crt` | Client | API server → kubelet             |
+| `apiserver-etcd-client.crt`    | Client | API server → etcd                |
+| `etcd/server.crt`              | Server | etcd clients                     |
+| `etcd/peer.crt`                | Both   | etcd peer-to-peer                |
+| `front-proxy-client.crt`       | Client | Aggregated API servers           |
 
 > **Key Concept:** Kubernetes uses **mutual TLS (mTLS)** — both sides present certificates. Server certs prove identity to clients; client certs prove identity to servers. All certs are signed by the cluster CA (`ca.crt`). The CA cert is the root of trust distributed to all components.
 

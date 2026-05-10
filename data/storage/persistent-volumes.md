@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 ## 🟢 Easy Questions
 
 ---
@@ -230,12 +220,12 @@ kubectl get pod db-pod -n database
 
 Access mode reference:
 
-| Mode | Short | Description |
-|------|-------|-------------|
-| `ReadWriteOnce` | RWO | One node can mount read-write |
-| `ReadOnlyMany` | ROX | Many nodes can mount read-only |
-| `ReadWriteMany` | RWX | Many nodes can mount read-write |
-| `ReadWriteOncePod` | RWOP | Only one pod cluster-wide (K8s 1.22+) |
+| Mode               | Short | Description                           |
+|--------------------|-------|---------------------------------------|
+| `ReadWriteOnce`    | RWO   | One node can mount read-write         |
+| `ReadOnlyMany`     | ROX   | Many nodes can mount read-only        |
+| `ReadWriteMany`    | RWX   | Many nodes can mount read-write       |
+| `ReadWriteOncePod` | RWOP  | Only one pod cluster-wide (K8s 1.22+) |
 
 > **Key Concept:** When a `storageClassName` refers to a StorageClass that has a **provisioner**, PVCs are dynamically provisioned — no pre-created PV is needed. The StorageClass provisioner creates a PV automatically when the PVC is created. This is the standard behaviour in cloud environments (GKE, EKS, AKS).
 
@@ -345,13 +335,13 @@ kubectl get pvc stuck-pvc
 
 Common causes:
 
-| Symptom in `describe` | Root Cause | Fix |
-|----------------------|-----------|-----|
-| No matching PV | Static PV doesn't exist or doesn't match | Create a matching PV |
-| StorageClass not found | Wrong `storageClassName` | Fix the name or create the StorageClass |
-| No provisioner | StorageClass has no dynamic provisioner | Add a provisioner or create PV manually |
-| Access mode mismatch | PVC RWX but PV only supports RWO | Align access modes |
-| Capacity too small | PV smaller than PVC request | Create a larger PV |
+| Symptom in `describe`  | Root Cause                               | Fix                                     |
+|------------------------|------------------------------------------|-----------------------------------------|
+| No matching PV         | Static PV doesn't exist or doesn't match | Create a matching PV                    |
+| StorageClass not found | Wrong `storageClassName`                 | Fix the name or create the StorageClass |
+| No provisioner         | StorageClass has no dynamic provisioner  | Add a provisioner or create PV manually |
+| Access mode mismatch   | PVC RWX but PV only supports RWO         | Align access modes                      |
+| Capacity too small     | PV smaller than PVC request              | Create a larger PV                      |
 
 > **Key Concept:** A PVC stays `Pending` whenever Kubernetes cannot find a suitable PV. The binding algorithm checks: storageClassName match → access mode compatibility → capacity (PV ≥ PVC request). All three must be satisfied. `kubectl describe pvc` always shows the exact reason in the Events section.
 
@@ -394,11 +384,11 @@ kubectl get pv pv-retain
 
 Reclaim policy comparison:
 
-| Policy | On PVC Delete | Data | PV Status After |
-|--------|--------------|------|-----------------|
-| `Retain` | PV kept, data preserved | ✅ Safe | `Released` (manual cleanup needed) |
-| `Delete` | PV and underlying storage deleted | ❌ Deleted | PV gone |
-| `Recycle` | *(Deprecated)* Basic scrub (`rm -rf`) | ❌ Deleted | `Available` |
+| Policy    | On PVC Delete                         | Data      | PV Status After                    |
+|-----------|---------------------------------------|-----------|------------------------------------|
+| `Retain`  | PV kept, data preserved               | ✅ Safe    | `Released` (manual cleanup needed) |
+| `Delete`  | PV and underlying storage deleted     | ❌ Deleted | PV gone                            |
+| `Recycle` | *(Deprecated)* Basic scrub (`rm -rf`) | ❌ Deleted | `Available`                        |
 
 ```bash
 # Change a PV's reclaim policy
@@ -517,12 +507,12 @@ PV STATUS == Available
 
 ### Access Modes
 
-| Mode | Short | Meaning |
-|------|-------|---------|
-| `ReadWriteOnce` | RWO | Single node, read-write |
-| `ReadOnlyMany` | ROX | Multiple nodes, read-only |
-| `ReadWriteMany` | RWX | Multiple nodes, read-write |
-| `ReadWriteOncePod` | RWOP | Single pod cluster-wide (1.22+) |
+| Mode               | Short | Meaning                         |
+|--------------------|-------|---------------------------------|
+| `ReadWriteOnce`    | RWO   | Single node, read-write         |
+| `ReadOnlyMany`     | ROX   | Multiple nodes, read-only       |
+| `ReadWriteMany`    | RWX   | Multiple nodes, read-write      |
+| `ReadWriteOncePod` | RWOP  | Single pod cluster-wide (1.22+) |
 
 ### Useful Commands
 

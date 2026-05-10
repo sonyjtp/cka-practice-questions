@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 > ℹ️ **Scope Note:** The CKA exam tests **HPA** (Horizontal Pod Autoscaler) and **manual scaling**. VPA (Vertical Pod Autoscaler) is **not** a CKA topic — it is excluded from this file.
 
 ---

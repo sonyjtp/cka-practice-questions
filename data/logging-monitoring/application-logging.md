@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 ## 🟢 Easy Questions
 
 ---
@@ -58,17 +48,17 @@ kubectl logs app-pod | grep -i "warning"
 
 Common flags:
 
-| Flag | Purpose |
-|------|---------|
-| `-f, --follow` | Stream logs (like `tail -f`) |
-| `--tail=N` | Show last N lines |
-| `--timestamps=true` | Include timestamps |
-| `--since=TIME` | Show logs since timestamp |
-| `--previous` | Show logs from previous pod restart |
-| `-c, --container=NAME` | Logs from specific container |
-| `--all-containers=true` | Logs from all containers |
-| `-l, --selector=LABEL` | Logs from pods matching label selector |
-| `--limit-bytes=N` | Limit output to N bytes |
+| Flag                    | Purpose                                |
+|-------------------------|----------------------------------------|
+| `-f, --follow`          | Stream logs (like `tail -f`)           |
+| `--tail=N`              | Show last N lines                      |
+| `--timestamps=true`     | Include timestamps                     |
+| `--since=TIME`          | Show logs since timestamp              |
+| `--previous`            | Show logs from previous pod restart    |
+| `-c, --container=NAME`  | Logs from specific container           |
+| `--all-containers=true` | Logs from all containers               |
+| `-l, --selector=LABEL`  | Logs from pods matching label selector |
+| `--limit-bytes=N`       | Limit output to N bytes                |
 
 > **Key Concept:** `kubectl logs` retrieves stdout/stderr from the container. Logs are stored in `/var/log/containers/` on the node. If a container restarts, previous logs are available with `--previous`.
 
@@ -304,13 +294,13 @@ kubectl get pod fail-pod -o jsonpath='{.status.containerStatuses[0].lastState.te
 
 Common failure scenarios with log patterns:
 
-| Log Pattern | Likely Cause | Fix |
-|---|---|---|
-| **ImagePullBackOff** in events | Image not found | Correct image name, add pull secret |
-| **CrashLoopBackOff** | App crashing repeatedly | Check logs, fix app startup |
-| **Connection refused** in logs | Service not ready | Check service, pod endpoints |
-| **OOMKilled** in describe | Out of memory | Increase memory limit |
-| **Permission denied** in logs | Security/RBAC issue | Check RBAC, security context |
+| Log Pattern                    | Likely Cause            | Fix                                 |
+|--------------------------------|-------------------------|-------------------------------------|
+| **ImagePullBackOff** in events | Image not found         | Correct image name, add pull secret |
+| **CrashLoopBackOff**           | App crashing repeatedly | Check logs, fix app startup         |
+| **Connection refused** in logs | Service not ready       | Check service, pod endpoints        |
+| **OOMKilled** in describe      | Out of memory           | Increase memory limit               |
+| **Permission denied** in logs  | Security/RBAC issue     | Check RBAC, security context        |
 
 > **Key Concept:** Combine three tools: `get pod` (quick status), `describe pod` (events), `logs` (app output). This trinity diagnoses ~90% of pod issues.
 

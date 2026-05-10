@@ -6,16 +6,6 @@
 
 ---
 
-## ⏱️ Time Guide
-
-| Difficulty | Recommended Time |
-|------------|-----------------|
-| 🟢 Easy    | 4–6 minutes     |
-| 🟡 Medium  | 6–8 minutes     |
-| 🔴 Hard    | 8–10 minutes    |
-
----
-
 > ℹ️ **Scope Note:** Ingress requires an **Ingress Controller** to be installed (e.g., nginx, Traefik, HAProxy). On the CKA exam, an Ingress Controller is pre-installed. The `networking.k8s.io/v1` API (stable since Kubernetes 1.19) is used throughout this file.
 
 ---
