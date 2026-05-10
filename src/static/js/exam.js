@@ -20,6 +20,8 @@
   let assessmentModeEnabled = true;  // user choice from start screen
   let answerRevealTiming = "end";    // "end" or "during"
   let timerPaused = false;            // true if timer is paused
+  let pausedStartTime = null;         // when pause was started
+  let totalPausedTime = 0;            // cumulative paused time in milliseconds
 
   // Per-question state: { answered: bool, correct: bool|null, flagged: bool }
   let questionStates = [];
@@ -270,6 +272,17 @@
   }
 
   function toggleTimerPause() {
+    if (!timerPaused) {
+      // Starting pause — record when pause started
+      pausedStartTime = Date.now();
+    } else {
+      // Resuming — add the paused duration to total
+      if (pausedStartTime) {
+        totalPausedTime += Date.now() - pausedStartTime;
+        pausedStartTime = null;
+      }
+    }
+
     timerPaused = !timerPaused;
     const btn = $("#timer-pause-btn");
     if (btn) {
@@ -511,6 +524,13 @@
 
   function endExam(timedOut) {
     clearInterval(timerInterval);
+
+    // If exam ends while timer is paused, capture that paused time too
+    if (timerPaused && pausedStartTime) {
+      totalPausedTime += Date.now() - pausedStartTime;
+      pausedStartTime = null;
+    }
+
     examEndTime = Date.now();
     examEnded = true;
 
@@ -541,9 +561,10 @@
     // Simple results: just stats, time, and flagged questions
     const total = exam.total_questions;
     const flagged = questionStates.filter((s) => s.flagged).length;
-    const elapsed = Math.floor(((examEndTime || Date.now()) - examStartTime) / 1000);
-    const elapsedMins = Math.floor(elapsed / 60);
-    const elapsedSecs = elapsed % 60;
+    const totalElapsed = Math.floor(((examEndTime || Date.now()) - examStartTime) / 1000);
+    const activeTime = totalElapsed - Math.floor(totalPausedTime / 1000);
+    const elapsedMins = Math.floor(activeTime / 60);
+    const elapsedSecs = activeTime % 60;
 
     let flaggedQuestionsHtml = "";
     if (flagged > 0) {
@@ -596,12 +617,13 @@
     `;
   }
 
-  function showAssessmentResults() {
+   function showAssessmentResults() {
     // Full assessment results: expandable questions with self-assess
     const total = exam.total_questions;
-    const elapsed = Math.floor(((examEndTime || Date.now()) - examStartTime) / 1000);
-    const elapsedMins = Math.floor(elapsed / 60);
-    const elapsedSecs = elapsed % 60;
+    const totalElapsed = Math.floor(((examEndTime || Date.now()) - examStartTime) / 1000);
+    const activeTime = totalElapsed - Math.floor(totalPausedTime / 1000);
+    const elapsedMins = Math.floor(activeTime / 60);
+    const elapsedSecs = activeTime % 60;
     const circumference = 2 * Math.PI * 75;
 
     // Calculate total possible points
